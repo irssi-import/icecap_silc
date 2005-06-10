@@ -1,0 +1,125 @@
+AC_INIT(configure.in)
+AM_MAINTAINER_MODE
+version=0.0.1
+
+AM_INIT_AUTOMAKE(irssi2_silc, $version, andrej@kacian.sk)
+AC_CONFIG_HEADER(config.h)
+
+AC_DEFINE([IRSSI2_SILC_VERSION], [], [Irssi2 SILC module version])
+AC_DEFINE_UNQUOTED(IRSSI2_SILC_VERSION, "${version}")
+
+IRSSI2_MODULEDIR=${libdir}/irssi2
+AC_SUBST(IRSSI2_MODULEDIR)
+
+AC_PROG_CC
+AC_ISC_POSIX
+AC_PROG_INSTALL
+AC_PROG_LIBTOOL
+
+silc_libs=""
+silc_include="" 
+silc_prefix=""
+
+AC_MSG_CHECKING(whether to use user-provided path for SILC files in pkg-config )
+AC_ARG_WITH(silc-prefix, 
+        [  --with-silc-prefix=PATH      Location of SILC files (optional, overrides pkg-
+config) ],
+        [
+                case "${withval}" in
+                *)
+                        AC_MSG_RESULT($withval)
+                        silc_prefix=$withval
+                        ;;
+                        esac
+        ],
+        [
+                AC_MSG_RESULT(no)
+        ])
+
+AC_MSG_CHECKING(whether to use user-provided path to SILC client libraries )
+AC_ARG_WITH(silc-libs,
+        [  --with-silc-libs=PATH        Location of SILC client libraries (optional, ove
+rrides pkg-config) ],
+        [
+                case "${withval}" in
+                *)
+                        AC_MSG_RESULT($withval)
+                        silc_libs=$withval
+                        ;;
+                esac
+        ],
+        [
+                AC_MSG_RESULT(no)
+        ])
+
+AC_MSG_CHECKING(whether to use user-provided path to SILC client includes )
+AC_ARG_WITH(silc-include,
+        [  --with-silc-include=PATH     Location of SILC client includes (optional, over
+rides pkg-config) ],
+        [
+                case "${withval}" in
+                *)
+                        AC_MSG_RESULT($withval)
+                        silc_include=$withval
+                        ;;
+                esac
+        ],
+        [
+                AC_MSG_RESULT(no)
+        ])
+
+if test x${silc_libs} = x ; then
+        PKG_CHECK_MODULES(SILC, silcclient,,exit)
+else
+        SILC_LIBS="-L${silc_libs} -lsilc -lsilcclient"
+        SILC_CFLAGS="-I${silc_include}"
+
+        AC_MSG_NOTICE(using SILC_LIBS... ${SILC_LIBS})
+        AC_MSG_NOTICE(using SILC_CFLAGS... ${SILC_CFLAGS} - If you get "silcincludes.h: 
+No such file or directory", it means you provided wrong path.)
+fi
+
+AC_SUBST(SILC_LIBS)
+AC_SUBST(SILC_CFLAGS)
+AC_SUBST(SILC_LDFLAGS)
+
+irssi2_include=""
+
+AC_MSG_CHECKING(whether to use user-provided path to Irssi2 includes )
+AC_ARG_WITH(silc-include,
+        [  --with-irssi2-include=PATH     Location of Irssi2 includes (optional,
+defaults to PREFIX/include/irssi2)) ],
+        [
+                case "${withval}" in
+                *)
+                        AC_MSG_RESULT($withval)
+                        irssi2_include=$withval
+                        ;;
+                esac
+        ],
+        [
+                AC_MSG_RESULT(no)
+        ])
+
+_prefix="/usr/local"
+if test ${prefix} != NONE ; then
+    _prefix=${prefix}
+fi
+
+if test x${irssi2_include} = x ; then
+    irssi2_include="${_prefix}/include/irssi2"
+fi
+
+IRSSI2_CFLAGS="-I${irssi2_include} -I${irssi2_include}/lib -I${irssi2_include}/server -I${irssi2_include}/lib-charset -I${irssi2_include}/lib-ssl-iostream"
+
+AC_MSG_NOTICE(using IRSSI2_CFLAGS... ${IRSSI2_CFLAGS})
+AC_SUBST(IRSSI2_CFLAGS)
+
+AC_OUTPUT([
+Makefile
+src/Makefile
+])
+
+echo
+echo "Configure finished, type \`make' to build irssi2_silc."
+echo
