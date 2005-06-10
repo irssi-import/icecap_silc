@@ -52,6 +52,7 @@ void i_silc_events_deinit(void);
 #define SILC_EVENT_NOTIFY_JOIN		"join"
 #define SILC_EVENT_NOTIFY_LEAVE		"leave"
 #define SILC_EVENT_NOTIFY_SIGNOFF	"signoff"
+#define SILC_EVENT_NOTIFY_KICK		"kick"
 
 #define SILC_EVENT_SIGNATURE		"signature"
 #define SILC_SIGSTATUS_VALID		"valid"

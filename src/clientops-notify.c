@@ -36,7 +36,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 	char *str;
 	char userhost[256];
 	SilcChannelEntry channel_entry;
-	SilcClientEntry client_entry;
+	SilcClientEntry client_entry, kicked, kicker;
 
 	va_list va;
 
@@ -198,6 +198,42 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 						str ? str : "");
 			}
 			break;
+
+		case SILC_NOTIFY_TYPE_KICKED:
+			kicked = va_arg(va, SilcClientEntry);
+			str = va_arg(va, char *);
+			kicker = va_arg(va, SilcClientEntry);
+			channel_entry = va_arg(va, SilcChannelEntry);
+
+			silc_channel = i_silc_channel_lookup(silc_gwconn,
+					channel_entry->channel_name);
+			if( silc_channel == NULL ) {
+				/* empty, shouldn't happen */
+				return;
+			}
+			channel = &silc_channel->channel;
+
+			event = silc_event_new(lu,
+					SILC_EVENT_NOTIFY_KICK);
+			event_add(event, "channel",
+					channel_entry->channel_name);
+			event_add(event, "kicker", kicker->nickname);
+			event_add(event, "target", kicked->nickname);
+			event_add(event, "msg", (str ? str : ""));
+			event_send(event);
+
+			if( kicked == silc_gwconn->conn->local_entry ) { 
+				/* we were kicked */
+				channel_deinit(channel, str);
+			} else {
+				presence = channel_lookup_presence(channel,
+						kicked->nickname);
+				if( presence != NULL )
+					channel_remove_presence(channel,
+							presence, str);
+			}
+			break;
+			
 		default:
 			event = silc_event_new(lu, "unhandled");
 			event_send(event);

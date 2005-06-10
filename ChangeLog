@@ -1,2 +1,5 @@
-2005-06-10  Andrej Kacian <andrej@kacian.sk>
+2005-06-10 23:20  Andrej Kacian <andrej@kacian.sk>
 	* Initial import to svn
+
+2005-06-10 23:32  Andrej Kacian <andrej@kacian.sk>
+	* src: silc.h, clientops-notify.c: Handle channel kicks
