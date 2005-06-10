@@ -7,7 +7,8 @@ INCLUDES = \
 	$(SILC_CFLAGS)
 
 irssi2_silc_la_LDFLAGS = \
-	-avoid-version -module \
+	-avoid-version \
+	-module \
 	$(SILC_LIBS)
 
 irssi2_silc_la_SOURCES = \
