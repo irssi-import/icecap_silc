@@ -1,5 +1,9 @@
-2005-06-10 23:20  Andrej Kacian <andrej@kacian.sk>
-	* Initial import to svn
+2005-06-11 02:01  Andrej Kacian <andrej@kacian.sk>
+	* src: silc.h, clientops-notify.c silc-client.c: Handle nickname
+	  changes. Prefixed key-related event names with "silc_".
 
 2005-06-10 23:32  Andrej Kacian <andrej@kacian.sk>
 	* src: silc.h, clientops-notify.c: Handle channel kicks
+
+2005-06-10 23:20  Andrej Kacian <andrej@kacian.sk>
+	* Initial import to svn

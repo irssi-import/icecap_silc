@@ -56,12 +56,12 @@ SilcClient i_silc_client_init(void)
 		silc_create_key_pair(NULL, 0, SILC_PUBKEY, SILC_PRVKEY,
 			"UN=irssi2,HN=localhost", "", &client->pkcs,
 			&client->public_key, &client->private_key, FALSE);
-		event = event_new(lu, "keys_generated");
+		event = event_new(lu, "silc_keys_generated");
 		event_add(event, "pubkey", SILC_PUBKEY);
 		event_add(event, "prvkey", SILC_PRVKEY);
 		event_send(event);
 	} else {
-		event = event_new(lu, "keys_loaded");
+		event = event_new(lu, "silc_keys_loaded");
 		event_send(event);
 	}
 		

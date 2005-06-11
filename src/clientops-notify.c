@@ -36,7 +36,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 	char *str;
 	char userhost[256];
 	SilcChannelEntry channel_entry;
-	SilcClientEntry client_entry, kicked, kicker;
+	SilcClientEntry client_entry, kicked, kicker, old, new;
 
 	va_list va;
 
@@ -232,6 +232,27 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 					channel_remove_presence(channel,
 							presence, str);
 			}
+			break;
+
+		case SILC_NOTIFY_TYPE_NICK_CHANGE:
+			old = va_arg(va, SilcClientEntry);
+			new = va_arg(va, SilcClientEntry);
+
+			event = silc_event_new(lu,
+					SILC_EVENT_NOTIFY_NICK_CHANGE);
+			event_add(event, "name", old->nickname);
+			event_add(event, "new_name", new->nickname);
+			event_send(event);
+
+			presence = presence_lookup(gwconn, old->nickname);
+			if( presence == NULL ) {
+				/* don't know, don't care */
+				return;
+			}
+			if( presence_lookup(gwconn, new->nickname) != NULL )
+				return; /* shouldn't happen, but ... */
+				
+			presence_set_name(presence, new->nickname);
 			break;
 			
 		default:
