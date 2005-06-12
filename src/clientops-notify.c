@@ -34,8 +34,8 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 	struct channel *channel;
 	struct presence *presence = NULL;
 
-	char *str;
-	char userhost[256];
+	char *str, *str2;
+	char userhost[256], motd[2049];
 	SilcChannelEntry channel_entry;
 	SilcClientEntry client_entry, kicked, kicker, old, new;
 
@@ -49,11 +49,26 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 
 	switch(type) {
 		case SILC_NOTIFY_TYPE_MOTD:
-			str = va_arg(va, char *);
-	
+			str2 = va_arg(va, char *);
+			strncat(motd, str2, 2048);
+
+			/* send each line of motd separately */
+			str = strtok(motd, "\n");
 			event = gwconn_get_event(gwconn, EVENT_GATEWAY_MOTD);
 			event_add(event, "data", str);
 			event_send(event);
+			while ( str = strtok(NULL, "\n") ) {
+				event = gwconn_get_event(gwconn,
+						EVENT_GATEWAY_MOTD);
+				event_add(event, "data", str);
+				event_send(event);
+			}
+
+			/* send gateway_motd_end event */
+			event = gwconn_get_event(gwconn,
+					EVENT_GATEWAY_MOTD_END);
+			event_send(event);
+
 			break;
 		case SILC_NOTIFY_TYPE_NONE:
 			str = va_arg(va, char *);

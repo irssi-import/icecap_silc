@@ -1,3 +1,8 @@
+2005-06-13 00:48  Andrej Kacian <andrej@kacian.sk>
+	* src/clientops-notify.c: Break up server MOTD into lines and send
+	  each line in a separate gateway_motd event, last followed by
+	  gateway_motd_end event.
+
 2005-06-13 00:03  Andrej Kacian <andrej@kacian.sk>
 	* src: clientops.c, silc-client.c, clientops-notify.c, silc-client.h
 	  silc-presence.c: Implement own nickname changing.
