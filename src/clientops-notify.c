@@ -50,14 +50,18 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 	switch(type) {
 		case SILC_NOTIFY_TYPE_MOTD:
 			str2 = va_arg(va, char *);
+			
+			memcpy(motd, "0", 2048);
 			strncat(motd, str2, 2048);
 
 			/* send each line of motd separately */
 			str = strtok(motd, "\n");
+			fprintf(stderr, "|%s|\n", str);
 			event = gwconn_get_event(gwconn, EVENT_GATEWAY_MOTD);
 			event_add(event, "data", str);
 			event_send(event);
 			while ( str = strtok(NULL, "\n") ) {
+				fprintf(stderr, "|%s|\n", str);
 				event = gwconn_get_event(gwconn,
 						EVENT_GATEWAY_MOTD);
 				event_add(event, "data", str);
@@ -70,6 +74,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			event_send(event);
 
 			break;
+
 		case SILC_NOTIFY_TYPE_NONE:
 			str = va_arg(va, char *);
 
@@ -81,6 +86,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			event_add(event, "msg", str);
 			event_send(event);
 			break;
+
 		case SILC_NOTIFY_TYPE_INVITE:
 			channel_entry = va_arg(va, SilcChannelEntry);
 			str = va_arg(va, char *);
@@ -97,6 +103,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			event_add(event, "hostname", client_entry->hostname);
 			event_send(event);
 			break;
+
 		case SILC_NOTIFY_TYPE_JOIN:
 			client_entry = va_arg(va, SilcClientEntry);
 			channel_entry = va_arg(va, SilcChannelEntry);
@@ -151,6 +158,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 				/* It's me */
 			}
 			break;
+
 		case SILC_NOTIFY_TYPE_LEAVE:
 			client_entry = va_arg(va, SilcClientEntry);
 			channel_entry = va_arg(va, SilcChannelEntry);
@@ -181,6 +189,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 				/* It is me (shouldn't happen) */
 			}
 			break;
+
 		case SILC_NOTIFY_TYPE_SIGNOFF:
 			client_entry = va_arg(va, SilcClientEntry);
 			str = va_arg(va, char *);
