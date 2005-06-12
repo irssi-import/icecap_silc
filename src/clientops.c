@@ -14,10 +14,12 @@
 #include "gateway.h"
 #include "channel.h"
 #include "messages.h"
+#include "presence.h"
 
 #include "clientops.h"
 #include "silc-gateway-connection.h"
 #include "silc-channel.h"
+#include "silc-client.h"
 #include "silc.h"
 
 typedef struct {
@@ -172,9 +174,11 @@ void i_silc_operation_command_reply(SilcClient client,
 		i_silc_gateway_connection_lookup_conn(conn);
 	struct gateway_connection *gwconn = &silc_gwconn->gwconn;
 	SilcChannelEntry channel_entry;
+	SilcClientEntry client_entry;
+	SilcClientID *client_id;
 	struct tree_iterate_context *iter;
 	struct presence *presence;
-	char *channel_name;
+	char *channel_name, *new_nick;
 	void *key, *value;
 	va_list va;
 
@@ -206,6 +210,20 @@ void i_silc_operation_command_reply(SilcClient client,
 				i_assert(channel);
 				channel_deinit(channel, "part");
 			}
+			break;
+		case SILC_COMMAND_NICK:
+			client_entry = va_arg(va, SilcClientEntry);
+			new_nick = va_arg(va, char *);
+			client_id = va_arg(va, SilcClientID *);
+
+			if( !i_silc_client_id_is_me(silc_gwconn, client_id) ) {
+				/* this shouldn't happen */
+				return;
+			}
+
+			presence = gwconn->local_presence->_presence;
+			if( strcmp(presence->name, new_nick) != 0 )
+				presence_set_name(presence, new_nick);
 			break;
 	}
 }

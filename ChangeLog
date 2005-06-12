@@ -1,3 +1,7 @@
+2005-06-13 00:03  Andrej Kacian <andrej@kacian.sk>
+	* src: clientops.c, silc-client.c, clientops-notify.c, silc-client.h
+	  silc-presence.c: Implement own nickname changing.
+
 2005-06-11 02:01  Andrej Kacian <andrej@kacian.sk>
 	* src: silc.h, clientops-notify.c silc-client.c: Handle nickname
 	  changes. Prefixed key-related event names with "silc_".

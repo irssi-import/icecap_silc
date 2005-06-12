@@ -18,6 +18,7 @@
 #include "clientops.h"
 #include "silc-gateway-connection.h"
 #include "silc-channel.h"
+#include "silc-client.h"
 #include "silc.h"
 
 void i_silc_operation_notify(SilcClient client __attr_unused__,
@@ -85,10 +86,8 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			client_entry = va_arg(va, SilcClientEntry);
 			channel_entry = va_arg(va, SilcChannelEntry);
 			
-
-			if( !SILC_ID_COMPARE(client_entry->id,
-					silc_gwconn->conn->local_entry->id,
-					sizeof(SilcClientID)) ) {
+			if( !i_silc_client_id_is_me(silc_gwconn,
+						client_entry->id) ) {
 				silc_channel =
 					i_silc_channel_lookup(silc_gwconn,
 						channel_entry->channel_name);

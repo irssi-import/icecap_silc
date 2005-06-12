@@ -80,3 +80,12 @@ void i_silc_client_nickname_parse(const char *nickname, char **return_nickname)
 {
 	*return_nickname = strdup(nickname);
 }
+
+bool i_silc_client_id_is_me(struct i_silc_gateway_connection *silc_gwconn,
+				SilcClientID *id)
+{
+	if( !SILC_ID_COMPARE(silc_gwconn->conn->local_entry->id, id,
+				sizeof(SilcClientID)) )
+		return TRUE;
+	return FALSE;
+}

@@ -7,8 +7,10 @@
 #include "presence.h"
 #include "gateway-connection.h"
 #include "chat-protocol.h"
+#include "event.h"
 
 #include "silc-presence.h"
+#include "silc-gateway-connection.h"
 
 struct presence *i_silc_presence_init(struct gateway_connection *gwconn,
 		const char *name)
@@ -30,7 +32,14 @@ void i_silc_presence_deinit(struct presence *presence)
 void i_silc_presence_change_request(struct presence *presence,
 		struct event *event)
 {
-	/* FIXME: stub! */
+	struct i_silc_gateway_connection *silc_gwconn =
+		(struct i_silc_gateway_connection *)presence->gwconn;
+	const char *new_name = event_get(event, "new_name");
+
+	printf("foo\n");
+	if( *new_name != '\0' )
+		silc_client_command_call(silc_gwconn->client, silc_gwconn->conn,
+				NULL, "NICK", new_name, NULL);
 }
 
 void i_silc_presence_status_request(struct presence *presence,
