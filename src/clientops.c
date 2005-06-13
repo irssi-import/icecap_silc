@@ -5,6 +5,7 @@
 #include <stdarg.h>
 
 #include "lib.h"
+#include "ioloop.h"
 #include "chat-protocol.h"
 #include "event.h"
 #include "local-user.h"
@@ -199,6 +200,8 @@ void i_silc_operation_command_reply(SilcClient client,
 				(struct i_silc_channel *)channel;
 			silc_channel->channel_entry = channel_entry;
 			channel_set_joined(channel);
+			channel_set_topic(channel, channel_entry->topic, NULL,
+					ioloop_time);
 			break;
 		case SILC_COMMAND_LEAVE:
 			channel_entry = va_arg(va, SilcChannelEntry);

@@ -1,3 +1,6 @@
+2005-06-13 02:05  Andrej Kacian <andrej@kacian.sk>
+	* src/clientops.c: Set internal channel topic on join.
+
 2005-06-13 01:58  Andrej Kacian <andrej@kacian.sk>
 	* src: silc.h, clientops-notify.c, silc-client.c: Handle channel topic
 	  set event.
