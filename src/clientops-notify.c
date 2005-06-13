@@ -5,6 +5,7 @@
 #include <stdarg.h>
 
 #include "lib.h"
+#include "ioloop.h"
 #include "chat-protocol.h"
 #include "event.h"
 #include "local-user.h"
@@ -34,10 +35,12 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 	struct channel *channel;
 	struct presence *presence = NULL;
 
-	char *str, *str2;
+	char *str = NULL, *str2 = NULL, *set_type = NULL, *set_by = NULL;
 	char userhost[256], motd[2049];
-	SilcChannelEntry channel_entry;
+	SilcChannelEntry channel_entry, channel_entry2;
 	SilcClientEntry client_entry, kicked, kicker, old, new;
+	SilcServerEntry server_entry;
+	SilcIdType id_type;
 
 	va_list va;
 
@@ -56,12 +59,10 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 
 			/* send each line of motd separately */
 			str = strtok(motd, "\n");
-			fprintf(stderr, "|%s|\n", str);
 			event = gwconn_get_event(gwconn, EVENT_GATEWAY_MOTD);
 			event_add(event, "data", str);
 			event_send(event);
 			while ( str = strtok(NULL, "\n") ) {
-				fprintf(stderr, "|%s|\n", str);
 				event = gwconn_get_event(gwconn,
 						EVENT_GATEWAY_MOTD);
 				event_add(event, "data", str);
@@ -277,7 +278,54 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 				
 			presence_set_name(presence, new->nickname);
 			break;
-			
+
+		case SILC_NOTIFY_TYPE_TOPIC_SET:
+			presence = NULL;
+			id_type = va_arg(va, int);
+			switch( id_type ) {
+				case SILC_ID_SERVER:
+					server_entry = va_arg(va,
+							SilcServerEntry);
+					set_type = strdup("server");
+					set_by = server_entry->server_name;
+					break;
+				case SILC_ID_CHANNEL:
+					channel_entry = va_arg(va,
+							SilcChannelEntry);
+					set_type = strdup("channel");
+					set_by = channel_entry->channel_name;
+					break;
+				case SILC_ID_CLIENT:
+					client_entry = va_arg(va,
+							SilcClientEntry);
+					set_type = strdup("client");
+					set_by = client_entry->nickname;
+					presence = presence_lookup(gwconn,
+							client_entry->nickname);
+					break;
+			}
+
+			str = va_arg(va, char *);
+			channel_entry2 = va_arg(va, SilcChannelEntry);
+
+			event = silc_event_new(lu, SILC_EVENT_NOTIFY_TOPIC_SET);
+			event_add(event, "set_type", set_type);
+			event_add(event, "set_by", set_by);
+			event_add(event, "channel",
+					channel_entry2->channel_name);
+			event_add(event, "topic", str);
+			event_send(event);
+
+			if( set_type != NULL )
+				free(set_type);
+
+			silc_channel = i_silc_channel_lookup_entry(silc_gwconn,
+					channel_entry2);
+			i_assert(silc_channel != NULL);
+			channel_set_topic(&silc_channel->channel, str,
+					presence, ioloop_time);
+			break;		
+
 		default:
 			event = silc_event_new(lu, "unhandled");
 			event_send(event);

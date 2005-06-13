@@ -1,3 +1,7 @@
+2005-06-13 01:58  Andrej Kacian <andrej@kacian.sk>
+	* src: silc.h, clientops-notify.c, silc-client.c: Handle topic set
+	  events.
+
 2005-06-13 00:48  Andrej Kacian <andrej@kacian.sk>
 	* src/clientops-notify.c: Break up server MOTD into lines and send
 	  each line in a separate gateway_motd event, last followed by
