@@ -118,6 +118,9 @@ static void event_logged_in(struct event *event)
 		(struct i_silc_gateway_connection *)gwconn;
 
 	if( silc_gwconn->connection_status == SILC_CLIENT_CONN_SUCCESS )
+		event_add(event, "resumed", "no");
+	else if( silc_gwconn->connection_status ==
+			SILC_CLIENT_CONN_SUCCESS_RESUME )
 		event_add(event, "resumed", "yes");
 }
 
