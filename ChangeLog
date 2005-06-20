@@ -1,3 +1,8 @@
+2005-06-20 14:03  Andrej Kacian <andrej@kacian.sk>
+	* src: clientops.c, silc-channel.c, silc-presence.[ch],
+	  clientops-notify.c: Moved userhost string creation to a separate
+	  function
+
 2005-06-20 13:37  Andrej Kacian <andrej@kacian.sk>
 	* src: silc-channel.c, clientops.c silc-presence.c: Wrote some
 	  groundwork for WHOIS

@@ -130,7 +130,7 @@ static void refresh_nicklist_resolved(SilcClient client,
 	struct i_silc_gateway_connection *silc_gwconn;
 	struct i_silc_channel *silc_channel;
 	int usercount = 0;
-	char userhost[256];
+	char *userhost;
 
 	silc_gwconn = (struct i_silc_gateway_connection *)
 		i_silc_gateway_connection_lookup_conn(conn);
@@ -153,8 +153,7 @@ static void refresh_nicklist_resolved(SilcClient client,
 		/* Do not init myself, as I'm already inited */
 		if( chu->client == silc_gwconn->conn->local_entry ) continue;
 
-		snprintf(userhost, 255, "%s@%s", chu->client->username,
-				chu->client->hostname);
+		userhost = i_silc_userhost(chu->client);
 
 		presence = presence_lookup(&silc_gwconn->gwconn,
 				chu->client->nickname);
@@ -169,6 +168,7 @@ static void refresh_nicklist_resolved(SilcClient client,
 			silc_presence = (struct i_silc_presence *)presence;
 			silc_presence->client_entry = chu->client;
 		} else channel_add_presence(&silc_channel->channel, presence);
+		free(userhost);
 	}
 	silc_hash_table_list_reset(&htl);
 	channel_initial_presences_added(&silc_channel->channel);

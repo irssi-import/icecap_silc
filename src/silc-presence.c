@@ -69,3 +69,15 @@ void i_silc_presence_status_request(struct presence *presence,
 			3, NULL, NULL, 4, idp->data, idp->len);
 	}
 }
+
+char *i_silc_userhost(SilcClientEntry client_entry)
+{
+	char *userhost = malloc(256);
+
+	if(client_entry != NULL)
+		snprintf(userhost, 255, "%s@%s", client_entry->username,
+			client_entry->hostname);
+	else sprintf(userhost, "@");
+
+	return userhost;
+}

@@ -20,6 +20,7 @@
 #include "silc-gateway-connection.h"
 #include "silc-channel.h"
 #include "silc-client.h"
+#include "silc-presence.h"
 #include "silc.h"
 
 void i_silc_operation_notify(SilcClient client __attr_unused__,
@@ -36,7 +37,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 	struct presence *presence = NULL;
 
 	char *str = NULL, *str2 = NULL, *set_type = NULL, *set_by = NULL;
-	char userhost[256], motd[2049];
+	char *userhost, motd[2049];
 	SilcChannelEntry channel_entry, channel_entry2;
 	SilcClientEntry client_entry, kicked, kicker, old, new;
 	SilcServerEntry server_entry;
@@ -121,9 +122,8 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 				/* Someone joined, let's add his presence */
 				if( client_entry->username != NULL ||
 				    client_entry->hostname != NULL) {
-					snprintf(userhost, 255, "%s@%s",
-						client_entry->username,
-						client_entry->hostname);
+					userhost =
+						i_silc_userhost(client_entry);
 				}
 
 				event = silc_event_new(lu,
@@ -155,6 +155,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 					}
 					channel_add_presence(channel, presence);
 				}
+				free(userhost);
 			} else {
 				/* It's me */
 			}
@@ -163,8 +164,8 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 		case SILC_NOTIFY_TYPE_LEAVE:
 			client_entry = va_arg(va, SilcClientEntry);
 			channel_entry = va_arg(va, SilcChannelEntry);
-			snprintf(userhost, 255, "%s@%s", client_entry->username,
-					client_entry->hostname);
+
+			userhost = i_silc_userhost(client_entry);
 
 			event = silc_event_new(lu, SILC_EVENT_NOTIFY_LEAVE);
 			event_add(event, "channel",
@@ -172,6 +173,8 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			event_add(event, "nick", client_entry->nickname);
 			event_add(event, "address", userhost);
 			event_send(event);
+
+			free(userhost);
 
 			if( !SILC_ID_COMPARE(client_entry->id,
 					silc_gwconn->conn->local_entry->id,
@@ -197,10 +200,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 
 			if( client_entry->username != NULL &&
 					client_entry->hostname != NULL )
-				snprintf(userhost, 255, "%s@%s",
-						client_entry->username,
-						client_entry->hostname);
-			else strncat(userhost, "unknown@unknown", 255);
+				userhost = i_silc_userhost(client_entry);
 
 			event = silc_event_new(lu, SILC_EVENT_NOTIFY_SIGNOFF);
 			if( client_entry->nickname != NULL )
@@ -209,6 +209,8 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			event_add(event, "address", userhost);
 			event_add(event, "reason", str ? str : "");
 			event_send(event);
+
+			free(userhost);
 
 			if( client_entry && client_entry->nickname ) {
 				presence = presence_lookup(gwconn,

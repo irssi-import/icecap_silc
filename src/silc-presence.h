@@ -22,4 +22,6 @@ void i_silc_presence_status_request(struct presence *presence,
 		const char *const *status_fields,
 		presence_status_request_callback_t *cb, void *context);
 
+char *i_silc_userhost(SilcClientEntry client_entry);
+
 #endif /* __SILC_PRESENCE_H */

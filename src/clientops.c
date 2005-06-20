@@ -21,6 +21,7 @@
 #include "silc-gateway-connection.h"
 #include "silc-channel.h"
 #include "silc-client.h"
+#include "silc-presence.h"
 #include "silc.h"
 
 typedef struct {
@@ -75,7 +76,7 @@ void i_silc_operation_channel_message(SilcClient client,
 {
 	char content_type[128];
 	char transfer_encoding[128];
-	char userhost[256];
+	char *userhost;
 	unsigned char *mime_data_buffer;
 	SilcUInt32 mime_data_len;
 	bool valid_mime;
@@ -111,8 +112,9 @@ void i_silc_operation_channel_message(SilcClient client,
 	event_add(event, "channel",
 			ichannel->name);
 	event_add(event, "nick", sender->nickname);
-	snprintf(userhost, 255, "%s@%s", sender->username, sender->hostname);
+	userhost = i_silc_userhost(sender);
 	event_add(event, "address", userhost);
+	free(userhost);
 	event_add_control(event, "gateway_connection", ichannel->gwconn);
 
 	if( valid_mime == TRUE ) {
