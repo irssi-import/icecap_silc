@@ -162,6 +162,8 @@ static void refresh_nicklist_resolved(SilcClient client,
 			presence = presence_init(&silc_gwconn->gwconn,
 					chu->client->nickname);
 			presence_set_address(presence, userhost);
+			presence_set_real_name(presence,
+					chu->client->realname);
 			channel_add_presence(&silc_channel->channel, presence);
 			presence_unref(presence);
 			silc_presence = (struct i_silc_presence *)presence;

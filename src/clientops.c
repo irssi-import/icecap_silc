@@ -228,6 +228,10 @@ void i_silc_operation_command_reply(SilcClient client,
 			if( strcmp(presence->name, new_nick) != 0 )
 				presence_set_name(presence, new_nick);
 			break;
+		case SILC_COMMAND_WHOIS:
+			event = silc_event_new(lu, "whoisreply");
+			event_send(event);
+			break;
 	}
 }
 
