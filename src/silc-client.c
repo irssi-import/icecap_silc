@@ -1,25 +1,51 @@
-/* Copyright 2005 Andrej Kacian */
+/*
+ * Irssi2_silc - a SILC module for Irssi2
+ * Copyright (C) 2005 Andrej Kacian
+ *
+ * - Functions related to SILC client itself
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #include <silcincludes.h>
 #include <silcclient.h>
 
 #include "lib.h"
+#include "base64.h"
 #include "chat-protocol.h"
 #include "event.h"
 #include "local-presence.h"
 
 #include "silc.h"
 #include "silc-client.h"
+#include "silc-presence.h"
 
 extern SilcClientOperations ops;
 
-SilcClient i_silc_client_init(void)
+SilcClient i_silc_client_init(struct local_presence *lp)
 {
 	SilcClient client;
 	SilcClientParams params;
 	struct event *event;
 	struct chat_protocol *proto = chat_protocol_lookup("SILC");
 	struct local_user *lu = proto->local_user;
+	struct i_silc_presence *silc_presence = (struct i_silc_presence *)
+		local_presence_get_presence(lp);
+	FILE *f, *g;
+	char in[50000], *out;
+	int ret, c;
 
 	params.task_max = 200;
 	params.rekey_secs = 0;			/* use default */
@@ -47,24 +73,26 @@ SilcClient i_silc_client_init(void)
 	silc_cipher_register_default();
 	silc_hmac_register_default();
 
-	silc_load_key_pair(SILC_PUBKEY, SILC_PRVKEY, "",
-			&client->pkcs, &client->public_key,
-			&client->private_key);
+	silc_load_key_pair(i_silc_key_path(lp, FALSE),
+			i_silc_key_path(lp, TRUE), "", &client->pkcs,
+			&client->public_key, &client->private_key);
 
+	/* Use some pre-generated keys for now */
+	if( !client->pkcs )
+		silc_load_key_pair(SILC_PUBKEY, SILC_PRVKEY, "", &client->pkcs,
+			&client->public_key, &client->private_key);
 
+	/* Generate a keypair for use */
 	if( !client->pkcs ) {
 		silc_create_key_pair(NULL, 0, SILC_PUBKEY, SILC_PRVKEY,
 			"UN=irssi2,HN=localhost", "", &client->pkcs,
 			&client->public_key, &client->private_key, FALSE);
 		event = event_new(lu, "silc_keys_generated");
-		event_add(event, "pubkey", SILC_PUBKEY);
-		event_add(event, "prvkey", SILC_PRVKEY);
 		event_send(event);
 	} else {
 		event = event_new(lu, "silc_keys_loaded");
 		event_send(event);
 	}
-		
 
 	silc_client_init(client);
 	return client;

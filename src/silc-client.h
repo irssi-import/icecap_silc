@@ -4,7 +4,9 @@
 #include <silcincludes.h>
 #include <silcclient.h>
 
-SilcClient i_silc_client_init(void);
+#include "local-presence.h"
+
+SilcClient i_silc_client_init(struct local_presence *lp);
 void i_silc_client_deinit(SilcClient client, SilcClientConnection conn);
 
 void i_silc_client_nickname_parse(const char *nickname, char **return_nickname);

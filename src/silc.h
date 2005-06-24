@@ -34,6 +34,8 @@ unsigned int verify_message_signature(SilcClientEntry sender,
 void i_silc_events_init(void);
 void i_silc_events_deinit(void);
 
+char *i_silc_key_path(struct local_presence *lp, bool private_key);
+
 #define IS_SILC_PROTOCOL(protocol) \
 	(strcmp((protocol)->name, "SILC") == 0)
 
@@ -60,5 +62,9 @@ void i_silc_events_deinit(void);
 #define SILC_SIGSTATUS_VALID		"valid"
 #define SILC_SIGSTATUS_INVALID		"invalid"
 #define SILC_SIGSTATUS_DUNNO		"dunno"
+
+#define SILC_EVENT_KEY_PUBKEY		"pub_key"
+#define SILC_EVENT_KEY_PRVKEY		"prv_key"
+#define SILC_EVENT_KEY_PASSPHRASE	"passphrase"
 
 #endif /* __SILC_H */

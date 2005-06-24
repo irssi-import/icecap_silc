@@ -1,4 +1,23 @@
-/* Copyright 2005 Andrej Kacian */
+/*
+ * Irssi2_silc - a SILC module for Irssi2
+ * Copyright (C) 2005 Andrej Kacian
+ *
+ * - Module init and deinit, some support functions
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #include <silcincludes.h>
 #include <silcclient.h>
@@ -44,12 +63,16 @@ static void i_silc_init(struct chat_protocol *protocol __attr_unused__)
 {
 	i_silc_gateway_connection_events_init();
 	i_silc_channel_events_init();
+
+	i_silc_presence_commands_init();
 }
 
 static void i_silc_deinit(struct chat_protocol *protocol __attr_unused__)
 {
 	i_silc_gateway_connection_events_deinit();
 	i_silc_channel_events_deinit();
+
+	i_silc_presence_commands_deinit();
 }
 
 unsigned int verify_message_signature(SilcClientEntry sender __attr_unused__,
@@ -93,6 +116,15 @@ void i_silc_events_deinit(void)
 {
 	event_unbind_list(high_priority_events);
 	event_unbind_list(events);
+}
+
+char *i_silc_key_path(struct local_presence *lp, bool private_key)
+{
+	char *path = malloc(512);
+
+	snprintf(path, 511, "%s/silc-%s.%s", getenv("HOME"), lp->name,
+			(private_key ? "prv" : "pub") );
+	return path;
 }
 
 static void event_local_user_init(struct event *event)

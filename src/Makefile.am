@@ -12,6 +12,7 @@ irssi2_silc_la_LDFLAGS = \
 	$(SILC_LIBS)
 
 irssi2_silc_la_SOURCES = \
+	base64.c base64.h \
 	silc.c silc.h \
 	silc-client.c silc-client.h \
 	silc-gateway.c silc-gateway.h \
@@ -19,5 +20,6 @@ irssi2_silc_la_SOURCES = \
 	silc-channel.c silc-channel.h \
 	silc-message.c silc-message.h \
 	silc-presence.c silc-presence.h \
+	silc-local-presence.c silc-local-presence.h \
 	clientops.c clientops.h \
 	clientops-notify.c
