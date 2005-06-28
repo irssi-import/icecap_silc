@@ -57,7 +57,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 	struct presence *presence = NULL;
 
 	char *str = NULL, *str2 = NULL, *set_type = NULL, *set_by = NULL;
-	char *userhost, motd[2049];
+	char *userhost = NULL, motd[2049];
 	SilcChannelEntry channel_entry, channel_entry2;
 	SilcClientEntry client_entry, kicked, kicker, old, new;
 	SilcServerEntry server_entry;
@@ -83,7 +83,7 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			event = gwconn_get_event(gwconn, EVENT_GATEWAY_MOTD);
 			event_add(event, "data", str);
 			event_send(event);
-			while ( str = strtok(NULL, "\n") ) {
+			while ( (str = strtok(NULL, "\n")) ) {
 				event = gwconn_get_event(gwconn,
 						EVENT_GATEWAY_MOTD);
 				event_add(event, "data", str);

@@ -52,3 +52,12 @@ char *i_silc_key_path(struct local_presence *lp, bool private_key)
                         (private_key ? "prv" : "pub") );
         return path;
 }
+
+char *i_silc_gen_key_path(struct local_presence *lp, bool private_key)
+{
+        char *path = malloc(512);
+
+        snprintf(path, 511, "%s/.irssi2/silc-gen-%s.%s", getenv("HOME"), lp->name,
+                        (private_key ? "prv" : "pub") );
+        return path;
+}

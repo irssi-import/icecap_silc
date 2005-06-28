@@ -4,7 +4,8 @@ plugin_LTLIBRARIES = irssi2_silc.la
 
 INCLUDES = \
 	$(IRSSI2_CFLAGS) \
-	$(SILC_CFLAGS)
+	$(SILC_CFLAGS) \
+	-Wall
 
 irssi2_silc_la_LDFLAGS = \
 	-avoid-version \

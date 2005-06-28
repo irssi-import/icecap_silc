@@ -44,8 +44,6 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	struct event *event;
 	struct chat_protocol *proto = chat_protocol_lookup("SILC");
 	struct local_user *lu = proto->local_user;
-	struct i_silc_presence *silc_presence = (struct i_silc_presence *)
-		local_presence_get_presence(lp);
 	struct i_silc_local_presence_auth *const *_auth;
 	struct i_silc_local_presence_auth *auth;
 	char *fingerprint;
@@ -89,7 +87,7 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 		silc_file_writefile(i_silc_key_path(lp, TRUE),
 				auth->private_key->data,
 				auth->private_key->used);
-		bool foo = silc_load_key_pair(i_silc_key_path(lp, FALSE),
+		silc_load_key_pair(i_silc_key_path(lp, FALSE),
 			i_silc_key_path(lp, TRUE), auth->passphrase,
 			&client->pkcs, &client->public_key,
 			&client->private_key);
@@ -101,13 +99,15 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 
 	/* Use some pre-generated keys for now */
 	if( !client->pkcs ) {
-		silc_load_key_pair(SILC_PUBKEY, SILC_PRVKEY, "", &client->pkcs,
+		silc_load_key_pair(i_silc_gen_key_path(lp, FALSE),
+			i_silc_gen_key_path(lp, TRUE), "", &client->pkcs,
 			&client->public_key, &client->private_key);
 	}
 
 	/* Generate a keypair for use */
 	if( !client->pkcs ) {
-		silc_create_key_pair(NULL, 0, SILC_PUBKEY, SILC_PRVKEY,
+		silc_create_key_pair(NULL, 0, i_silc_gen_key_path(lp, FALSE),
+			i_silc_gen_key_path(lp, TRUE),
 			"UN=irssi2,HN=localhost", "", &client->pkcs,
 			&client->public_key, &client->private_key, FALSE);
 		event = event_new(lu, "silc_keys_generated");

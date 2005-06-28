@@ -200,10 +200,8 @@ void i_silc_operation_command_reply(SilcClient client,
 	SilcChannelEntry channel_entry;
 	SilcClientEntry client_entry;
 	SilcClientID *client_id;
-	struct tree_iterate_context *iter;
 	struct presence *presence;
 	char *channel_name, *new_nick;
-	void *key, *value;
 	va_list va;
 
 	va_start(va, status);
@@ -261,9 +259,6 @@ void i_silc_operation_command_reply(SilcClient client,
 void i_silc_operation_connected(SilcClient client, SilcClientConnection conn,
 		SilcClientConnectionStatus status)
 {
-	struct event *event;
-	struct chat_protocol *proto = chat_protocol_lookup("SILC");
-	struct local_user *lu = proto->local_user;
 	struct gateway_connection *gwconn = NULL;
 	struct i_silc_gateway_connection *silc_gwconn = NULL;
 
