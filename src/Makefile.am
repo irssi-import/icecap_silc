@@ -21,5 +21,6 @@ irssi2_silc_la_SOURCES = \
 	silc-message.c silc-message.h \
 	silc-presence.c silc-presence.h \
 	silc-local-presence.c silc-local-presence.h \
+	support.c support.h \
 	clientops.c clientops.h \
 	clientops-notify.c

@@ -29,10 +29,13 @@
 #include "local-presence.h"
 
 #include "silc.h"
+#include "support.h"
 #include "silc-client.h"
 #include "silc-presence.h"
+#include "silc-local-presence.h"
 
 extern SilcClientOperations ops;
+extern unsigned int silc_module_id;
 
 SilcClient i_silc_client_init(struct local_presence *lp)
 {
@@ -43,9 +46,11 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	struct local_user *lu = proto->local_user;
 	struct i_silc_presence *silc_presence = (struct i_silc_presence *)
 		local_presence_get_presence(lp);
-	FILE *f, *g;
-	char in[50000], *out;
-	int ret, c;
+	struct i_silc_local_presence_auth *const *_auth;
+	struct i_silc_local_presence_auth *auth;
+	char *fingerprint;
+	unsigned char *pk;
+	SilcUInt32 pk_len;
 
 	params.task_max = 200;
 	params.rekey_secs = 0;			/* use default */
@@ -73,14 +78,32 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	silc_cipher_register_default();
 	silc_hmac_register_default();
 
-	silc_load_key_pair(i_silc_key_path(lp, FALSE),
-			i_silc_key_path(lp, TRUE), "", &client->pkcs,
-			&client->public_key, &client->private_key);
+	_auth = array_idx(&lp->module_contexts, silc_module_id);
+	auth = *_auth;
+	i_assert(auth != NULL);
+
+	/* Dump the keys to files, load them and delete them */
+	if( auth->public_key && auth->private_key ) {
+		silc_file_writefile(i_silc_key_path(lp, FALSE),
+				auth->public_key, strlen(auth->public_key));
+		silc_file_writefile(i_silc_key_path(lp, TRUE),
+				auth->private_key->data,
+				auth->private_key->used);
+		bool foo = silc_load_key_pair(i_silc_key_path(lp, FALSE),
+			i_silc_key_path(lp, TRUE), auth->passphrase,
+			&client->pkcs, &client->public_key,
+			&client->private_key);
+		remove(i_silc_key_path(lp, FALSE));
+		remove(i_silc_key_path(lp, TRUE));
+
+		memset(auth, 0, sizeof(auth));
+	}
 
 	/* Use some pre-generated keys for now */
-	if( !client->pkcs )
+	if( !client->pkcs ) {
 		silc_load_key_pair(SILC_PUBKEY, SILC_PRVKEY, "", &client->pkcs,
 			&client->public_key, &client->private_key);
+	}
 
 	/* Generate a keypair for use */
 	if( !client->pkcs ) {
@@ -89,9 +112,19 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 			&client->public_key, &client->private_key, FALSE);
 		event = event_new(lu, "silc_keys_generated");
 		event_send(event);
-	} else {
+	}
+
+	if( client->pkcs ) {
 		event = event_new(lu, "silc_keys_loaded");
+
+		pk = silc_pkcs_public_key_encode(client->public_key, &pk_len);
+		fingerprint = silc_hash_fingerprint(NULL, pk, pk_len);
+
+		event_add(event, "fingerprint", fingerprint);
 		event_send(event);
+
+		free(pk);
+		free(fingerprint);
 	}
 
 	silc_client_init(client);

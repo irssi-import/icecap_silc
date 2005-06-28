@@ -26,18 +26,8 @@ void i_silc_scheduler(void *client);
 void i_silc_client_close_connection(struct i_silc_gateway_connection *
 		silc_gwconn);
 
-struct event *silc_event_new(struct local_user *local_user, const char *name);
-
-unsigned int verify_message_signature(SilcClientEntry sender,
-		SilcMessageSignedPayload sig, SilcMessagePayload payload);
-
 void i_silc_events_init(void);
 void i_silc_events_deinit(void);
-
-char *i_silc_key_path(struct local_presence *lp, bool private_key);
-
-#define IS_SILC_PROTOCOL(protocol) \
-	(strcmp((protocol)->name, "SILC") == 0)
 
 #define SILC_EVENT			"silc_event"
 

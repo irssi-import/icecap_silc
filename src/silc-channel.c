@@ -31,6 +31,7 @@
 #include "tree.h"
 
 #include "silc.h"
+#include "support.h"
 #include "silc-channel.h"
 #include "silc-gateway-connection.h"
 #include "silc-presence.h"

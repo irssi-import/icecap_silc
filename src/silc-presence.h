@@ -10,16 +10,6 @@ struct i_silc_presence {
 	struct presence presence;
 
 	SilcClientEntry client_entry;
-
-	/* This should actually be stored only in struct local_presence, but
-	 * since irssi2 API doesn't allow custom local_presence-derived
-	 * structs, it has to go here.
-	 * These two members are only used when this presence belongs to
-	 * local presence, and store pointers to keypair to be loaded by
-	 * i_silc_client_init()
-	 * */
-	char *public_key;
-	char *private_key;
 };
 
 void i_silc_presence_commands_init(void);

@@ -35,6 +35,7 @@
 #include "local-presence.h"
 
 #include "silc.h"
+#include "support.h"
 #include "silc-gateway.h"
 #include "silc-gateway-connection.h"
 #include "silc-client.h"
@@ -49,6 +50,7 @@ i_silc_gateway_connection_init(struct gateway *gw __attr_unused__,
 
 	silc_gwconn = i_new(struct i_silc_gateway_connection, 1);
 	silc_gwconn->ops = ops;
+
 	silc_gwconn->client = i_silc_client_init(lp);
 
 	silc_gwconn->client->nickname = lp->name;
@@ -75,13 +77,14 @@ static void event_gateway_connected(struct event *event)
 {
 	struct gateway_connection *gwconn;
 	struct i_silc_gateway_connection *silc_gwconn;
+	char *passphrase;
 
 	gwconn = event_get_control(event, "gateway_connection");
 	if( gwconn == NULL ||
 		!IS_SILC_PROTOCOL(gwconn->gateway->network->protocol))
 			return;
-
 	silc_gwconn = (struct i_silc_gateway_connection *)gwconn;
+
 	silc_gwconn->conn = silc_client_add_connection(silc_gwconn->client,
 				NULL, gwconn->gateway->connection->hostname,
 				gwconn->port, NULL);

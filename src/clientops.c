@@ -38,11 +38,12 @@
 #include "presence.h"
 
 #include "clientops.h"
+#include "support.h"
+#include "silc.h"
 #include "silc-gateway-connection.h"
 #include "silc-channel.h"
 #include "silc-client.h"
 #include "silc-presence.h"
-#include "silc.h"
 
 typedef struct {
 	SilcGetAuthMeth completion;

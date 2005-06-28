@@ -75,14 +75,6 @@ static void i_silc_deinit(struct chat_protocol *protocol __attr_unused__)
 	i_silc_presence_commands_deinit();
 }
 
-unsigned int verify_message_signature(SilcClientEntry sender __attr_unused__,
-		SilcMessageSignedPayload sig __attr_unused__,
-		SilcMessagePayload payload __attr_unused__)
-{
-	/* FIXME: do signature check - return "dunno" for now */
-	return -1;
-}
-
 void i_silc_scheduler(void *client)
 {
 	silc_client_run_one((SilcClient)client);
@@ -98,14 +90,6 @@ void i_silc_client_close_connection(struct i_silc_gateway_connection *
 	silc_gwconn->gwconn.fd = -1;
 }
 
-/* A convenience function for creating "silc_event" events. */
-struct event *silc_event_new(struct local_user *local_user, const char *name)
-{
-	struct event *event = event_new(local_user, SILC_EVENT);
-	event_add(event, "event", name);
-	return event;
-}
-
 void i_silc_events_init(void)
 {
 	event_bind_list(events, 0);
@@ -116,15 +100,6 @@ void i_silc_events_deinit(void)
 {
 	event_unbind_list(high_priority_events);
 	event_unbind_list(events);
-}
-
-char *i_silc_key_path(struct local_presence *lp, bool private_key)
-{
-	char *path = malloc(512);
-
-	snprintf(path, 511, "%s/silc-%s.%s", getenv("HOME"), lp->name,
-			(private_key ? "prv" : "pub") );
-	return path;
 }
 
 static void event_local_user_init(struct event *event)

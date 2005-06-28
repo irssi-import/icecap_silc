@@ -36,6 +36,7 @@
 #include "presence.h"
 
 #include "clientops.h"
+#include "support.h"
 #include "silc-gateway-connection.h"
 #include "silc-channel.h"
 #include "silc-client.h"

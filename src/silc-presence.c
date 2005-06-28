@@ -40,9 +40,6 @@ struct presence *i_silc_presence_init(struct gateway_connection *gwconn,
 	silc_presence = i_new(struct i_silc_presence, 1);
 	silc_presence->client_entry = NULL;
 
-	silc_presence->public_key = NULL;
-	silc_presence->private_key = NULL;
-
 	return &silc_presence->presence;
 }
 

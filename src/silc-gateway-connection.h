@@ -9,6 +9,7 @@
 struct i_silc_gateway_connection {
 	struct gateway_connection gwconn;
 
+	char *passphrase;
 	SilcClient client;
 	SilcClientOperations ops;
 	SilcClientConnection conn;
