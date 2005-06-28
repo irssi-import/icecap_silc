@@ -1,3 +1,6 @@
+2005-06-28 23:05  Andrej Kacian <andrej@kacian.sk>
+	* AUTHORS, README: Added some basic documentation.
+
 2005-06-28 21:56  Andrej Kacian <andrej@kacian.sk>
 	* src: silc.h, clientops.c, silc-channel.c, silc-presence.h,
 	       clientops-notify.c, silc-client.c, support.c, support.h,

@@ -1,0 +1,84 @@
+This document only contains some SILC-specific information I have thought would
+be a good idea to mention. Refer to irssi2 documentation[1] for basics of
+irssi2 protocol.
+
+1. http://dovecot.org/cgi-bin/viewcvs.cgi/irssi2/doc/#dirlist
+
+--
+
+(Visit http://www.silcnet.org for more info about what SILC is.)
+
+CONNECTING TO SILC SERVER
+=========================
+
+You need a SILC keypair (a public key and a private key) in order to connect to
+a SILC server. Your public key uniquely identifies you on a given SILC network.
+
+However, if you don't have (or don't want to use) your existing SILC key pair,
+you can simply tell irssi2 where do you want to connect, and it will generate
+a keypair for you.
+Following example makes irssi2 onnect to sauna.silcnet.org using SILC protocol,
+using nickname "johnd":
+
+1;network add;name=silcnet;protocol=silc
+2;presence add;network=silcnet;name=johnd
+3;gateway add;host=sauna.silcnet.org;network=silc
+4;presence connect;network=silcnet;presence=johnd
+
+Upon the "presence connect" command, irssi2 will look into its SILC key
+directory for silc-gen-johnd.pub and silc-gen-johnd.prv, and load these keys,
+or it will generate and use a new keypair, which gets saved to those files.
+Next time, if you want to connect with the same presence name, these keys will
+be used.
+
+!!! WARNING: Such generated keys are not protected with a password, and should
+!!!	     not be used if you plan to send or receive critical data on SILC.
+
+--
+
+You can send your public and private keys to irssi2 along with "presence add"
+command, using command keys "pub_key", "prv_key", and optionally "passphrase":
+
+1;network add;name=silcnet;protocol=silc
+2;presence add;name=johnd;network=silcnet;pub_key=-----BEGIN SILC PUBLIC KEY-----\nAAABJwADcnNhABZVTj1pcnNzaTIsSE49bG9jYWxob3N0AAAAAv/9AAABAEdDo8Ksb8cUtpj\nNyQlf3EgaT+sRgkvhVTmiIs49drFRwshGyKA9lw/d0sUyF4ZmdQ5U2exaSjjhJItZ27zb4f\nLscdQhMDeCTBhCgMxuoW6lq9OcLIscC+AznUOxxfbXKAYptJYkJuV91QMFZafolVlMvfMah\na2FO2tIXxYJvzSbn2bvQpcop0DFjM2wmCUrTX9ux/hehGeLnQ0xHaFM661aqr4nhS8/+hqX\nK+gFnbd07Tbk2qCzkBMceSvmkC7mEfDlC4ab7eJKtu/oPj8EYZARQGwr3LTwusFwDqbrAx0\nXzfyirk1X106LW2F2JImgR5Q0va+WDuNj5JreyU5m7kk=\n-----END SILC PUBLIC KEY-----\n;prv_key=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\nUklWQVRFIEtFWS0tLS0tCg==\n;passphrase=s3kr1t
+3;gateway add;host=sauna.silcnet.org;network=silc
+4;presence connect;network=silcnet;presence=johnd
+
+Public key ("pub_key") is being sent in the exact format as found in public
+key file (with "\n" instead of line breaks).
+Since private key file can contain any character (even EOF or '\0'), it has to
+be sent base64-encoded (you can use f.e. mimencode (mmencode on some systems)
+utility:
+
+$ mimencode mykey.pub | mimencode
+
+Passphrase ("passphrase") is being sent in plaintext - ensure that you're
+using a secure connection to irssi2 before sending it. If your private key
+is not protected by a passphrase, you need to either omit this command key, or
+set it to an empty string ("....;passphrase=").
+
+--
+
+NOTE: Following is valid for both methods of connection.
+After irssi2 loads keys for your connection, following event is being sent back
+to client:
+
+*;silc_keys_loaded;id=13;time=1119990031;fingerprint=157A 5CEE 8470 FFF7 98D4  7A7A FD99 F260 77AD EB3E
+
+The "fingerprint" event key contains fingerprint of a public_key that has been
+loaded and will be used for connecting to SILC server.
+
+--
+
+NICKNAME CHANGE
+===============
+
+Remember that local presence name is unique within irssi2, and does not change
+with nickname changes:
+
+123;presence change;network=silcnet;presence=john;new_name=johnDoe
+124;presence change;network=silcnet;presence=john;new_name=master_yoda
+
+--
+
+(c) 2005 Andrej Kacian <andrej@kacian.sk>

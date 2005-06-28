@@ -68,15 +68,6 @@ static void silc_cmd_presence_add_low(struct event *event)
 
 	auth = i_new(struct i_silc_local_presence_auth, 1);
 
-	/* Don't do anything special if the keys weren't passed */
-	if( pub_key == NULL || prv_key == NULL ||
-			!strlen(pub_key) || !strlen(prv_key) ) {
-		auth->public_key = NULL;
-		auth->private_key = NULL;
-		auth->passphrase = NULL;
-		return;
-	}
-
 	i_assert( client != NULL );
 	i_assert( network != NULL );
 
@@ -88,13 +79,22 @@ static void silc_cmd_presence_add_low(struct event *event)
 	lpr = local_presence_lookup(lu, net, name);
 	i_assert(lpr != NULL);
 
-	auth->public_key = strdup(pub_key);
+	/* Don't do anything special if the keys weren't passed */
+	if( pub_key == NULL || prv_key == NULL ||
+			!strlen(pub_key) || !strlen(prv_key) ) {
+		auth->public_key = NULL;
+		auth->private_key = NULL;
+		auth->passphrase = NULL;
+	} else {
+		auth->public_key = strdup(pub_key);
 
-	auth->private_key = buffer_create_dynamic(default_pool, 1);
+		auth->private_key = buffer_create_dynamic(default_pool, 1);
+		base64_decode(prv_key, strlen(prv_key), NULL,
+				auth->private_key);
 
-	base64_decode(prv_key, strlen(prv_key), NULL, auth->private_key);
-
-	auth->passphrase = (passphrase ? strdup(passphrase) : strdup(""));
+		auth->passphrase =
+			(passphrase ? strdup(passphrase) : strdup(""));
+	}
 
 	array_idx_set(&lpr->module_contexts, silc_module_id, &auth);
 }
