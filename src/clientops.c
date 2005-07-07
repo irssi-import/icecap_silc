@@ -33,7 +33,7 @@
 #include "gateway-connection.h"
 #include "network.h"
 #include "gateway.h"
-#include "channel.h"
+#include "channel-connection.h"
 #include "messages.h"
 #include "presence.h"
 
@@ -41,7 +41,7 @@
 #include "support.h"
 #include "silc.h"
 #include "silc-gateway-connection.h"
-#include "silc-channel.h"
+#include "silc-channel-connection.h"
 #include "silc-client.h"
 #include "silc-presence.h"
 
@@ -74,8 +74,7 @@ void i_silc_operation_say(SilcClient client, SilcClientConnection conn,
 	struct event *event;
 	char str[256];
 	va_list va;
-	struct chat_protocol *proto = chat_protocol_lookup("SILC");
-	struct local_user *lu = proto->local_user;
+	struct local_user *lu = client->application;
 
 	event = silc_event_new(lu, SILC_EVENT_SERVER_SAY);
 
@@ -105,15 +104,14 @@ void i_silc_operation_channel_message(SilcClient client,
 	char header_length_str[16];
 /*	bool error; */
 	struct event *event;
-	struct chat_protocol *proto = chat_protocol_lookup("SILC");
-	struct local_user *lu = proto->local_user;
+	struct local_user *lu = client->application;
 	struct gateway_connection *gwconn =
 		i_silc_gateway_connection_lookup_conn(conn);
 	struct i_silc_gateway_connection *silc_gwconn =
 		(struct i_silc_gateway_connection *)gwconn;
-	struct i_silc_channel *silc_channel =
-		i_silc_channel_lookup_entry(silc_gwconn, channel);
-	struct channel *ichannel = &silc_channel->channel;
+	struct i_silc_channel_connection *silc_chconn =
+		i_silc_channel_connection_lookup_entry(silc_gwconn, channel);
+	struct channel_connection *ichconn = &silc_chconn->chconn;
 
 	event = event_new(lu, EVENT_MSG);
 
@@ -127,16 +125,16 @@ void i_silc_operation_channel_message(SilcClient client,
 
 	
 	event_add(event, "network",
-			ichannel->gwconn->gateway->network->name);
+			ichconn->gwconn->gateway->network->name);
 	event_add(event, "presence",
-			ichannel->gwconn->local_presence->name);
+			ichconn->gwconn->local_presence->name);
 	event_add(event, "channel",
-			ichannel->name);
+			ichconn->channel->name);
 	event_add(event, "nick", sender->nickname);
 	userhost = i_silc_userhost(sender);
 	event_add(event, "address", userhost);
 	free(userhost);
-	event_add_control(event, "gateway_connection", ichannel->gwconn);
+	event_add_control(event, "gateway_connection", ichconn->gwconn);
 
 	if( valid_mime == TRUE ) {
 		header_length = message_len - mime_data_len;
@@ -188,10 +186,9 @@ void i_silc_operation_command_reply(SilcClient client,
 		SilcClientConnection conn, SilcCommandPayload cmd_payload,
 		bool success, SilcCommand command, SilcStatus status, ...)
 {
-	struct chat_protocol *proto = chat_protocol_lookup("SILC");
-	struct local_user *lu = proto->local_user;
-	struct channel *channel;
-	struct i_silc_channel *silc_channel;
+	struct local_user *lu = client->application;
+	struct channel_connection *chconn;
+	struct i_silc_channel_connection *silc_chconn;
 	struct event *event;
 	struct i_silc_gateway_connection *silc_gwconn =
 		(struct i_silc_gateway_connection *)
@@ -210,30 +207,22 @@ void i_silc_operation_command_reply(SilcClient client,
 		case SILC_COMMAND_JOIN:
 			channel_name = va_arg(va, char *);
 			channel_entry = va_arg(va, SilcChannelEntry);
-			silc_channel =
-				i_silc_channel_lookup(silc_gwconn,
+			silc_chconn =
+				i_silc_channel_connection_lookup(silc_gwconn,
 						channel_entry->channel_name);
-			channel = &silc_channel->channel;
+			chconn = &silc_chconn->chconn;
 
-			i_assert(channel != NULL);
+			i_assert(chconn != NULL);
 
-			silc_channel =
-				(struct i_silc_channel *)channel;
-			silc_channel->channel_entry = channel_entry;
-			channel_set_joined(channel);
-			channel_set_topic(channel, channel_entry->topic, NULL,
+			silc_chconn =
+				(struct i_silc_channel_connection *)chconn;
+			silc_chconn->channel_entry = channel_entry;
+			channel_connection_set_joined(chconn);
+			channel_connection_set_topic(chconn,
+					channel_entry->topic, NULL,
 					ioloop_time);
 			break;
 		case SILC_COMMAND_LEAVE:
-			channel_entry = va_arg(va, SilcChannelEntry);
-			if( success == TRUE ) {
-				silc_channel =
-					i_silc_channel_lookup(silc_gwconn,
-						channel_entry->channel_name);
-				channel = &silc_channel->channel;
-				i_assert(channel);
-				channel_deinit(channel, "part");
-			}
 			break;
 		case SILC_COMMAND_NICK:
 			client_entry = va_arg(va, SilcClientEntry);

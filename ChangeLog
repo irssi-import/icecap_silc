@@ -1,3 +1,10 @@
+2005-07-08 01:00  Andrej Kacian <andrej@kacian.sk>
+	* src: silc-channel.c, clientops.c, silc-channel-connection.h,
+	       silc-channel.h, silc-client.c, clientops-notify.c,
+	       silc-message.c, silc-local-presence.c,
+	       silc-gateway-connection.c, Makefile.am, silc.c,
+	       silc-channel-connection.c: Update to work with current irssi2
+
 2005-06-28 23:05  Andrej Kacian <andrej@kacian.sk>
 	* AUTHORS, README: Added some basic documentation.
 

@@ -42,8 +42,7 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	SilcClient client;
 	SilcClientParams params;
 	struct event *event;
-	struct chat_protocol *proto = chat_protocol_lookup("SILC");
-	struct local_user *lu = proto->local_user;
+	struct local_user *lu = lp->local_user;
 	struct i_silc_local_presence_auth *const *_auth;
 	struct i_silc_local_presence_auth *auth;
 	char *fingerprint;
@@ -59,7 +58,7 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	params.nickname_parse = &i_silc_client_nickname_parse;
 	params.ignore_requested_attributes = TRUE;
 
-	client = silc_client_alloc(&ops, &params, NULL, NULL);
+	client = silc_client_alloc(&ops, &params, lu, NULL);
 
 	client->username = silc_get_username();
 	if( !client->username )

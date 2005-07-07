@@ -57,7 +57,7 @@ static void silc_cmd_presence_add_low(struct event *event)
 	const char *pub_key = event_get(event, SILC_EVENT_KEY_PUBKEY);
 	const char *prv_key = event_get(event, SILC_EVENT_KEY_PRVKEY);
 	const char *passphrase = event_get(event, SILC_EVENT_KEY_PASSPHRASE);
-	const char *name = event_get(event, "name");
+	const char *name = event_get(event, "presence");
 	struct client *client = event_get_client(event);
 	struct local_user *lu;
 	const char *network = event_get(event, "network");
@@ -72,7 +72,7 @@ static void silc_cmd_presence_add_low(struct event *event)
 	i_assert( network != NULL );
 
 	lu = client->local_user;
-	net = network_lookup(network);
+	net = network_lookup(lu, network);
 	i_assert( net != NULL ); 
 
 	/* There should already be a local presence initialized */

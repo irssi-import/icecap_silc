@@ -28,7 +28,7 @@
 
 #include "silc-message.h"
 #include "silc-gateway-connection.h"
-#include "silc-channel.h"
+#include "silc-channel-connection.h"
 
 void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
 {
@@ -40,16 +40,19 @@ void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
 	const char *msg = event_get(event, EVENT_MSG);
 	const char *channel = event_get(event, "channel");
 	const char *target = event_get(event, "target");
-	struct i_silc_channel *silc_channel =
-		i_silc_channel_lookup(silc_gwconn, channel);
+	struct i_silc_channel_connection *silc_chconn;
 	SilcMessageFlags sendflags = SILC_MESSAGE_FLAG_UTF8;
+
+	i_assert(channel != NULL);
 
 	if( *target == '\0' && *channel == '\0' ) {
 		client_command_error(event, CLIENT_CMDERR_ARGS);
 		return;
 	}
 
-	if( silc_channel == NULL ) {
+	silc_chconn = i_silc_channel_connection_lookup(silc_gwconn, channel);
+
+	if( silc_chconn == NULL ) {
 		client_command_error(event, CLIENT_CMDERR_NOT_FOUND);
 		return;
 	}	
@@ -60,7 +63,8 @@ void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
 		return;
 
 	silc_client_send_channel_message(silc_gwconn->client,
-				silc_gwconn->conn, silc_channel->channel_entry,
+				silc_gwconn->conn, 
+				silc_chconn->channel_entry,
 				NULL, sendflags, (unsigned char *)msg,
 				strlen(msg), FALSE);
 }

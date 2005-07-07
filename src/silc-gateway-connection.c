@@ -131,8 +131,7 @@ void i_silc_gateway_connection_events_deinit(void)
 struct gateway_connection *
 i_silc_gateway_connection_lookup_conn(SilcClientConnection conn)
 {
-	struct chat_protocol *proto = chat_protocol_lookup("SILC");
-	struct local_user *lu = proto->local_user;
+	struct local_user *lu = conn->client->application;
 	struct gateway_connection *const *g;
 	unsigned int i, count;
 

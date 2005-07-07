@@ -32,6 +32,7 @@
 #include "silc-gateway.h"
 #include "silc-gateway-connection.h"
 #include "silc-channel.h"
+#include "silc-channel-connection.h"
 #include "silc-message.h"
 #include "silc-presence.h"
 
@@ -62,7 +63,7 @@ static struct chat_protocol *i_silc_alloc(void)
 static void i_silc_init(struct chat_protocol *protocol __attr_unused__)
 {
 	i_silc_gateway_connection_events_init();
-	i_silc_channel_events_init();
+	i_silc_channel_connection_events_init();
 
 	i_silc_presence_commands_init();
 }
@@ -70,7 +71,7 @@ static void i_silc_init(struct chat_protocol *protocol __attr_unused__)
 static void i_silc_deinit(struct chat_protocol *protocol __attr_unused__)
 {
 	i_silc_gateway_connection_events_deinit();
-	i_silc_channel_events_deinit();
+	i_silc_channel_connection_events_deinit();
 
 	i_silc_presence_commands_deinit();
 }
@@ -104,14 +105,7 @@ void i_silc_events_deinit(void)
 
 static void event_local_user_init(struct event *event)
 {
-	struct local_user *lu = NULL;
-
-	/* grab the newly init'd local_user... */
-	lu = event_get_control(event, "local_user");
-	i_assert(lu != NULL);
-
-	/* ...and register our protocol with it */
-	chat_protocol_register(lu, &silc_protocol);
+	chat_protocol_register(&silc_protocol);
 }
 
 static void event_logged_in(struct event *event)
@@ -124,11 +118,12 @@ static void event_logged_in(struct event *event)
 	struct i_silc_gateway_connection *silc_gwconn =
 		(struct i_silc_gateway_connection *)gwconn;
 
-	if( silc_gwconn->connection_status == SILC_CLIENT_CONN_SUCCESS )
+	if( silc_gwconn->connection_status == SILC_CLIENT_CONN_SUCCESS ) {
 		event_add(event, "resumed", "no");
-	else if( silc_gwconn->connection_status ==
-			SILC_CLIENT_CONN_SUCCESS_RESUME )
+	} else if( silc_gwconn->connection_status ==
+			SILC_CLIENT_CONN_SUCCESS_RESUME ) {
 		event_add(event, "resumed", "yes");
+	}
 }
 
 static struct event_bind_list events[] = {
@@ -144,7 +139,6 @@ static struct event_bind_list high_priority_events[] = {
 struct chat_protocol silc_protocol = {
 	0,
 	"SILC",
-	NULL,
 
 	SILC_DEFAULT_CHARSET,
 
@@ -159,16 +153,16 @@ struct chat_protocol silc_protocol = {
 	i_silc_gateway_connection_init,
 	i_silc_gateway_connection_deinit,
 
+	i_silc_presence_init,
+	i_silc_presence_deinit,
+
 	i_silc_channel_init,
 	i_silc_channel_deinit,
 
-	i_silc_presence_init,
-	i_silc_presence_deinit,
-	
-	i_silc_message_send,
+	i_silc_channel_connection_init,
+	i_silc_channel_connection_deinit,
 
-	i_silc_join_send,
-	i_silc_part_send,
+	i_silc_message_send,
 
 	i_silc_presence_change_request,
 	i_silc_presence_status_request

@@ -32,28 +32,27 @@
 #include "gateway-connection.h"
 #include "network.h"
 #include "gateway.h"
-#include "channel.h"
+#include "channel-connection.h"
 #include "presence.h"
 
 #include "clientops.h"
 #include "support.h"
 #include "silc-gateway-connection.h"
-#include "silc-channel.h"
+#include "silc-channel-connection.h"
 #include "silc-client.h"
 #include "silc-presence.h"
 #include "silc.h"
 
-void i_silc_operation_notify(SilcClient client __attr_unused__,
+void i_silc_operation_notify(SilcClient client,
 		SilcClientConnection conn,
 		SilcNotifyType type, ...)
 {
-	struct chat_protocol *proto = chat_protocol_lookup("SILC");
-	struct local_user *lu = proto->local_user;
+	struct local_user *lu = client->application;
 	struct event *event;
 	struct gateway_connection *gwconn;
 	struct i_silc_gateway_connection *silc_gwconn;
-	struct i_silc_channel *silc_channel;
-	struct channel *channel;
+	struct i_silc_channel_connection *silc_chconn;
+	struct channel_connection *chconn;
 	struct presence *presence = NULL;
 
 	char *str = NULL, *str2 = NULL, *set_type = NULL, *set_by = NULL;
@@ -132,12 +131,13 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			
 			if( !i_silc_client_id_is_me(silc_gwconn,
 						client_entry->id) ) {
-				silc_channel =
-					i_silc_channel_lookup(silc_gwconn,
+				silc_chconn =
+					i_silc_channel_connection_lookup(
+						silc_gwconn,
 						channel_entry->channel_name);
-				channel = &silc_channel->channel;
+				chconn = &silc_chconn->chconn;
 
-				i_assert(channel != NULL);
+				i_assert(chconn != NULL);
 
 				/* Someone joined, let's add his presence */
 				if( client_entry->username != NULL ||
@@ -163,9 +163,11 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 					presence_set_address(presence,
 							userhost);
 
-					channel_add_presence(channel, presence);
+					channel_connection_add_presence(chconn,
+							presence);
 					presence_unref(presence);
-				} else if( channel_lookup_presence(channel,
+				} else if( channel_connection_lookup_presence(
+						chconn,
 						presence->name) == NULL ) {
 					if( userhost != NULL ) {
 						presence->uncertain_address =
@@ -173,7 +175,8 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 						presence_set_address(presence,
 								userhost);
 					}
-					channel_add_presence(channel, presence);
+					channel_connection_add_presence(chconn,
+							presence);
 				}
 				free(userhost);
 			} else {
@@ -200,15 +203,16 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 					silc_gwconn->conn->local_entry->id,
 					sizeof(SilcClientID)) ) {
 				/* Someone else left */
-				silc_channel =
-					i_silc_channel_lookup(silc_gwconn,
+				silc_chconn =
+					i_silc_channel_connection_lookup(
+						silc_gwconn,
 						channel_entry->channel_name);
-				channel = &silc_channel->channel;
-				presence = channel_lookup_presence(channel,
-						client_entry->nickname);
+				chconn = &silc_chconn->chconn;
+				presence = channel_connection_lookup_presence(
+						chconn,	client_entry->nickname);
 				if( presence != NULL )
-					channel_remove_presence(channel,
-							presence, "");
+					channel_connection_remove_presence(
+							chconn,	presence, "");
 			} else {
 				/* It is me (shouldn't happen) */
 			}
@@ -240,8 +244,8 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 					return;
 				}
 
-				channels_remove_presence(gwconn, presence,
-						str ? str : "");
+				channel_connections_remove_presence(gwconn,
+						presence, str ? str : "");
 			}
 			break;
 
@@ -251,13 +255,14 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			kicker = va_arg(va, SilcClientEntry);
 			channel_entry = va_arg(va, SilcChannelEntry);
 
-			silc_channel = i_silc_channel_lookup(silc_gwconn,
+			silc_chconn = i_silc_channel_connection_lookup(
+					silc_gwconn,
 					channel_entry->channel_name);
-			if( silc_channel == NULL ) {
+			if( silc_chconn == NULL ) {
 				/* empty, shouldn't happen */
 				return;
 			}
-			channel = &silc_channel->channel;
+			chconn = &silc_chconn->chconn;
 
 			event = silc_event_new(lu,
 					SILC_EVENT_NOTIFY_KICK);
@@ -270,13 +275,13 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 
 			if( kicked == silc_gwconn->conn->local_entry ) { 
 				/* we were kicked */
-				channel_deinit(channel, str);
+				channel_connection_deinit(chconn, str);
 			} else {
-				presence = channel_lookup_presence(channel,
-						kicked->nickname);
+				presence = channel_connection_lookup_presence(
+						chconn, kicked->nickname);
 				if( presence != NULL )
-					channel_remove_presence(channel,
-							presence, str);
+					channel_connection_remove_presence(
+							chconn, presence, str);
 			}
 			break;
 
@@ -341,10 +346,10 @@ void i_silc_operation_notify(SilcClient client __attr_unused__,
 			if( set_type != NULL )
 				free(set_type);
 
-			silc_channel = i_silc_channel_lookup_entry(silc_gwconn,
-					channel_entry2);
-			i_assert(silc_channel != NULL);
-			channel_set_topic(&silc_channel->channel, str,
+			silc_chconn = i_silc_channel_connection_lookup_entry(
+					silc_gwconn, channel_entry2);
+			i_assert(silc_chconn != NULL);
+			channel_connection_set_topic(&silc_chconn->chconn, str,
 					presence, ioloop_time);
 			break;		
 
