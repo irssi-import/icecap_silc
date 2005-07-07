@@ -1,3 +1,6 @@
+2005-07-08 01:22  Andrej Kacian <andrej@kacian.sk>
+	* README: Updated
+
 2005-07-08 01:00  Andrej Kacian <andrej@kacian.sk>
 	* src: silc-channel.c, clientops.c, silc-channel-connection.h,
 	       silc-channel.h, silc-client.c, clientops-notify.c,
