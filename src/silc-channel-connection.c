@@ -134,7 +134,6 @@ i_silc_channel_connection_lookup(struct i_silc_gateway_connection *silc_gwconn,
 
 	c = array_get(&gwconn->channel_connections, &count);
 	for( i = 0; i < count; i++ ) {
-		fprintf(stderr, ">> %s\n", c[i]->channel->name);
 		if( strcasecmp(c[i]->channel->name, name) == 0 )
 			return (struct i_silc_channel_connection *)c[i];
 	}
