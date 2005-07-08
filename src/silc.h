@@ -11,6 +11,12 @@
 
 #define SILC_DEFAULT_CHARSET	"UTF-8"
 
+#define IS_SILC_PROTOCOL(protocol) \
+	(strcmp((protocol)->name, "SILC") == 0)
+
+#define IS_SILC_NETWORK(network) \
+	(strcmp((network->protocol)->name, "SILC") == 0)
+
 struct silc_protocol {
 	struct chat_protocol protocol;
 

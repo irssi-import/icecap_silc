@@ -75,7 +75,7 @@ void event_channel_connection_init(struct event *event)
 {
 	struct channel_connection *chconn = event_get_channel_conn(event);
 
-	if( !IS_SILC_PROTOCOL(chconn->gwconn->gateway->network->protocol) )
+	if( !IS_SILC_CHCONN(chconn) )
 		return;
 
 	SilcBuffer idp;
@@ -97,7 +97,7 @@ void event_channel_connection_deinit(struct event *event)
 {
 	struct channel_connection *chconn = event_get_channel_conn(event);
 
-	if( !IS_SILC_PROTOCOL(chconn->gwconn->gateway->network->protocol) )
+	if( !IS_SILC_CHCONN(chconn) )
 		return;
 
 	struct i_silc_gateway_connection *silc_gwconn =
@@ -218,7 +218,7 @@ static void event_joined(struct event *event)
 
 	i_assert(chconn != NULL);
 
-	if( !IS_SILC_PROTOCOL(chconn->gwconn->gateway->network->protocol) )
+	if( !IS_SILC_CHCONN(chconn) )
 		return;
 	
 	silc_chconn = (struct i_silc_channel_connection *)chconn;

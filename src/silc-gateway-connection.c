@@ -79,8 +79,7 @@ static void event_gateway_connected(struct event *event)
 	struct i_silc_gateway_connection *silc_gwconn;
 
 	gwconn = event_get_control(event, "gateway_connection");
-	if( gwconn == NULL ||
-		!IS_SILC_PROTOCOL(gwconn->gateway->network->protocol))
+	if( gwconn == NULL || !IS_SILC_GWCONN(gwconn) )
 			return;
 
 	silc_gwconn = (struct i_silc_gateway_connection *)gwconn;
@@ -100,8 +99,7 @@ static void event_gateway_disconnected(struct event *event)
 	struct i_silc_gateway_connection *silc_gwconn;
 
 	gwconn = event_get_control(event, "gateway_connection");
-	if( gwconn == NULL ||
-		!IS_SILC_PROTOCOL(gwconn->gateway->network->protocol))
+	if( gwconn == NULL || !IS_SILC_GWCONN(gwconn) )
 			return;
 
 	silc_gwconn = (struct i_silc_gateway_connection *)gwconn;

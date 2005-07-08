@@ -6,6 +6,9 @@
 
 #include "gateway-connection.h"
 
+#define IS_SILC_GWCONN(gwconn) \
+	(strcmp((gwconn->gateway->network->protocol)->name, "SILC") == 0)
+
 struct i_silc_gateway_connection {
 	struct gateway_connection gwconn;
 

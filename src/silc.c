@@ -24,6 +24,7 @@
 
 #include "lib.h"
 #include "chat-protocol.h"
+#include "network.h"
 #include "local-user.h"
 #include "module.h"
 
@@ -35,6 +36,7 @@
 #include "silc-channel-connection.h"
 #include "silc-message.h"
 #include "silc-presence.h"
+#include "support.h"
 
 unsigned int silc_module_id;
 
@@ -115,7 +117,7 @@ static void event_gateway_logged_in(struct event *event)
 
 	i_assert(gwconn != NULL);
 
-	if( !IS_SILC_PROTOCOL(gwconn->gateway->network->protocol) )
+	if( !IS_SILC_GWCONN(gwconn) )
 		return;
 
 	struct i_silc_gateway_connection *silc_gwconn =

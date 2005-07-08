@@ -8,6 +8,10 @@
 
 #include "silc-gateway-connection.h"
 
+#define IS_SILC_CHCONN(chconn) \
+	(strcmp((chconn->gwconn->gateway->network->protocol)->name, \
+		"SILC") == 0)
+
 struct i_silc_channel_connection {
 	struct channel_connection chconn;
 	char *name;

@@ -3,6 +3,9 @@
 
 #include "gateway.h"
 
+#define IS_SILC_GATEWAY(gateway) \
+	(strcmp((gateway->network->protocol)->name, "SILC") == 0)
+
 struct i_silc_gateway {
 	struct gateway gateway;
 
