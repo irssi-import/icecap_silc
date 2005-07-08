@@ -108,12 +108,15 @@ static void event_local_user_init(struct event *event)
 	chat_protocol_register(&silc_protocol);
 }
 
-static void event_logged_in(struct event *event)
+static void event_gateway_logged_in(struct event *event)
 {
 	struct gateway_connection *gwconn =
 		event_get_control(event, "gateway_connection");
 
 	i_assert(gwconn != NULL);
+
+	if( !IS_SILC_PROTOCOL(gwconn->gateway->network->protocol) )
+		return;
 
 	struct i_silc_gateway_connection *silc_gwconn =
 		(struct i_silc_gateway_connection *)gwconn;
@@ -132,7 +135,7 @@ static struct event_bind_list events[] = {
 };
 
 static struct event_bind_list high_priority_events[] = {
-	{ NULL, EVENT_GATEWAY_LOGGED_IN, event_logged_in },
+	{ NULL, EVENT_GATEWAY_LOGGED_IN, event_gateway_logged_in },
 	{ NULL, NULL, NULL }
 };
 
