@@ -66,10 +66,10 @@ static void silc_cmd_presence_add_low(struct event *event)
 	struct local_presence *lpr;
 	struct i_silc_local_presence_auth *auth;
 
-	auth = i_new(struct i_silc_local_presence_auth, 1);
-
 	i_assert( client != NULL );
 	i_assert( network != NULL );
+
+	auth = i_new(struct i_silc_local_presence_auth, 1);
 
 	lu = client->local_user;
 	net = network_lookup(lu, network);

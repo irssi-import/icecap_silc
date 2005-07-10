@@ -1,3 +1,8 @@
+2005-07-10 06:53  Andrej Kacian <andrej@kacian.sk>
+	* src: silc-client.c, silc-client.h, support.c, support.h,
+	       silc-local-presence.c: Load keys directly from memory, if
+	       available.
+
 2005-07-08 01:22  Andrej Kacian <andrej@kacian.sk>
 	* README: Updated
 

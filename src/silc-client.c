@@ -79,20 +79,11 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	auth = *_auth;
 	i_assert(auth != NULL);
 
-	/* Dump the keys to files, load them and delete them */
+	printf("blah");
+	/* Try loading keys provided with the presence */
 	if( auth->public_key && auth->private_key ) {
-		silc_file_writefile(i_silc_key_path(lp, FALSE),
-				auth->public_key, strlen(auth->public_key));
-		silc_file_writefile(i_silc_key_path(lp, TRUE),
-				auth->private_key->data,
-				auth->private_key->used);
-		silc_load_key_pair(i_silc_key_path(lp, FALSE),
-			i_silc_key_path(lp, TRUE), auth->passphrase,
-			&client->pkcs, &client->public_key,
-			&client->private_key);
-		remove(i_silc_key_path(lp, FALSE));
-		remove(i_silc_key_path(lp, TRUE));
-
+		i_silc_load_keys(auth, &client->pkcs, &client->public_key,
+						&client->private_key);
 		memset(auth, 0, sizeof(auth));
 	}
 
