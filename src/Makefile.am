@@ -20,6 +20,7 @@ irssi2_silc_la_SOURCES = \
 	silc-client.c silc-client.h \
 	silc-channel.c silc-channel.h \
 	silc-channel-connection.c silc-channel-connection.h \
+	silc-channel-presence.c silc-channel-presence.h \
 	silc-gateway.c silc-gateway.h \
 	silc-gateway-connection.c silc-gateway-connection.h \
 	silc-local-presence.c silc-local-presence.h \

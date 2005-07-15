@@ -28,6 +28,7 @@
 #include "presence.h"
 #include "network.h"
 #include "gateway.h"
+#include "channel-presence.h"
 #include "tree.h"
 
 #include "silc.h"
@@ -157,6 +158,7 @@ static void refresh_nicklist_resolved(SilcClient client,
 	SilcHashTableList htl;
 	SilcChannelUser chu;
 	struct presence *presence;
+	struct channel_presence *chpres;
 	struct i_silc_presence *silc_presence;
 	struct i_silc_gateway_connection *silc_gwconn;
 	struct i_silc_channel_connection *silc_chconn;
@@ -195,13 +197,19 @@ static void refresh_nicklist_resolved(SilcClient client,
 			presence_set_address(presence, userhost);
 			presence_set_real_name(presence,
 					chu->client->realname);
+			chpres = channel_connection_presence_init(
+					&silc_chconn->chconn, presence);
 			channel_connection_add_presence(&silc_chconn->chconn,
-								presence);
+								chpres);
 			presence_unref(presence);
 			silc_presence = (struct i_silc_presence *)presence;
 			silc_presence->client_entry = chu->client;
-		} else channel_connection_add_presence(&silc_chconn->chconn,
-								presence);
+		} else {
+			chpres = channel_connection_presence_init(
+					&silc_chconn->chconn, presence);
+			channel_connection_add_presence(&silc_chconn->chconn,
+								chpres);
+		}
 		free(userhost);
 	}
 	silc_hash_table_list_reset(&htl);

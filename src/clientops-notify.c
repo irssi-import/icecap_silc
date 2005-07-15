@@ -33,6 +33,7 @@
 #include "network.h"
 #include "gateway.h"
 #include "channel-connection.h"
+#include "channel-presence.h"
 #include "presence.h"
 
 #include "clientops.h"
@@ -53,6 +54,7 @@ void i_silc_operation_notify(SilcClient client,
 	struct i_silc_gateway_connection *silc_gwconn;
 	struct i_silc_channel_connection *silc_chconn;
 	struct channel_connection *chconn;
+	struct channel_presence *chpres;
 	struct presence *presence = NULL;
 
 	char *str = NULL, *str2 = NULL, *set_type = NULL, *set_by = NULL;
@@ -159,12 +161,16 @@ void i_silc_operation_notify(SilcClient client,
 				if( presence == NULL ) {
 					presence = presence_init(gwconn,
 							client_entry->nickname);
-					presence->uncertain_address = FALSE;
 					presence_set_address(presence,
 							userhost);
+					presence->uncertain_address = FALSE;
+
+					chpres =
+					  channel_connection_presence_init(
+							  chconn, presence);
 
 					channel_connection_add_presence(chconn,
-							presence);
+							chpres);
 					presence_unref(presence);
 				} else if( channel_connection_lookup_presence(
 						chconn,
@@ -175,8 +181,13 @@ void i_silc_operation_notify(SilcClient client,
 						presence_set_address(presence,
 								userhost);
 					}
+
+					chpres =
+					  channel_connection_presence_init(
+							  chconn, presence);
+
 					channel_connection_add_presence(chconn,
-							presence);
+							chpres);
 				}
 				free(userhost);
 			} else {
@@ -208,11 +219,11 @@ void i_silc_operation_notify(SilcClient client,
 						silc_gwconn,
 						channel_entry->channel_name);
 				chconn = &silc_chconn->chconn;
-				presence = channel_connection_lookup_presence(
+				chpres = channel_connection_lookup_presence(
 						chconn,	client_entry->nickname);
-				if( presence != NULL )
+				if( chpres != NULL )
 					channel_connection_remove_presence(
-							chconn,	presence, "");
+							chconn,	chpres, "");
 			} else {
 				/* It is me (shouldn't happen) */
 			}
@@ -277,11 +288,11 @@ void i_silc_operation_notify(SilcClient client,
 				/* we were kicked */
 				channel_connection_deinit(chconn, str);
 			} else {
-				presence = channel_connection_lookup_presence(
+				chpres = channel_connection_lookup_presence(
 						chconn, kicked->nickname);
-				if( presence != NULL )
+				if( chpres != NULL )
 					channel_connection_remove_presence(
-							chconn, presence, str);
+							chconn, chpres, str);
 			}
 			break;
 

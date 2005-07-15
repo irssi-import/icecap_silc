@@ -34,6 +34,7 @@
 #include "silc-gateway-connection.h"
 #include "silc-channel.h"
 #include "silc-channel-connection.h"
+#include "silc-channel-presence.h"
 #include "silc-message.h"
 #include "silc-presence.h"
 #include "support.h"
@@ -166,6 +167,9 @@ struct chat_protocol silc_protocol = {
 
 	i_silc_channel_connection_init,
 	i_silc_channel_connection_deinit,
+
+	i_silc_channel_presence_init,
+	i_silc_channel_presence_deinit,
 
 	i_silc_message_send,
 

@@ -70,7 +70,6 @@ void i_silc_gateway_connection_deinit(struct gateway_connection *gwconn)
 
 	i_silc_client_deinit(silc_gwconn->client, silc_gwconn->conn);
 	i_free(gwconn);
-	/* FIXME: stub! */
 }
 
 static void event_gateway_connected(struct event *event)
