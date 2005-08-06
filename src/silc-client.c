@@ -75,17 +75,17 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	silc_cipher_register_default();
 	silc_hmac_register_default();
 
-	_auth = array_idx(&lp->module_contexts, silc_module_id);
-	auth = *_auth;
-	i_assert(auth != NULL);
+//	_auth = array_idx(&lp->module_contexts, silc_module_id);
+//	auth = *_auth;
+//	i_assert(auth != NULL);
 
 	printf("blah");
 	/* Try loading keys provided with the presence */
-	if( auth->public_key && auth->private_key ) {
-		i_silc_load_keys(auth, &client->pkcs, &client->public_key,
-						&client->private_key);
-		memset(auth, 0, sizeof(auth));
-	}
+//	if( auth->public_key && auth->private_key ) {
+//		i_silc_load_keys(auth, &client->pkcs, &client->public_key,
+//						&client->private_key);
+//		memset(auth, 0, sizeof(auth));
+//	}
 
 	/* Use some pre-generated keys for now */
 	if( !client->pkcs ) {
@@ -135,7 +135,7 @@ void i_silc_client_nickname_parse(const char *nickname, char **return_nickname)
 bool i_silc_client_id_is_me(struct i_silc_gateway_connection *silc_gwconn,
 				SilcClientID *id)
 {
-	if( !SILC_ID_COMPARE(silc_gwconn->conn->local_entry->id, id,
+	if( SILC_ID_COMPARE(silc_gwconn->conn->local_entry->id, id,
 				sizeof(SilcClientID)) )
 		return TRUE;
 	return FALSE;

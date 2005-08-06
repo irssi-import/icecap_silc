@@ -61,7 +61,6 @@ static void silc_cmd_presence_add_low(struct event *event)
 	struct client *client = event_get_client(event);
 	struct local_user *lu;
 	const char *network = event_get(event, "network");
-//	struct buffer *debuf = buffer_create_dynamic(default_pool, 1);
 	struct network *net;
 	struct local_presence *lpr;
 	struct i_silc_local_presence_auth *auth;
@@ -74,10 +73,6 @@ static void silc_cmd_presence_add_low(struct event *event)
 	lu = client->local_user;
 	net = network_lookup(lu, network);
 	i_assert( net != NULL ); 
-
-	/* There should already be a local presence initialized */
-	lpr = local_presence_lookup(lu, net, name);
-	i_assert(lpr != NULL);
 
 	/* Don't do anything special if the keys weren't passed */
 	if( pub_key == NULL || prv_key == NULL ||
@@ -94,9 +89,13 @@ static void silc_cmd_presence_add_low(struct event *event)
 
 		auth->passphrase =
 			(passphrase ? strdup(passphrase) : strdup(""));
-	}
 
-	array_idx_set(&lpr->module_contexts, silc_module_id, &auth);
+		/* There should already be a local presence initialized */
+		lpr = local_presence_lookup(lu, net, name);
+		i_assert(lpr != NULL);
+
+		array_idx_set(&lpr->module_contexts, silc_module_id, &auth);
+	}
 }
 
 static struct client_command_bind_list silc_cmd_presence_low[] = {

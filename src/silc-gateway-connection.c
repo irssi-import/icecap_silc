@@ -43,8 +43,7 @@
 extern SilcClientOperations ops;
 	
 struct gateway_connection *
-i_silc_gateway_connection_init(struct gateway *gw __attr_unused__,
-				struct local_presence *lp)
+i_silc_gateway_connection_init(struct gateway *gw, struct local_presence *lp)
 {
 	struct i_silc_gateway_connection *silc_gwconn;
 

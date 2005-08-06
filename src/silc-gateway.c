@@ -33,18 +33,21 @@
 static unsigned int silc_default_port = 706;
 
 struct gateway*
-i_silc_gateway_init(const char *hostname, const struct event_arg *args)
+i_silc_gateway_init(const char *hostname, struct event *event)
 {
+	const char *port_str = event_get(event, "port");
 	struct i_silc_gateway *silc_gw;
 	array_t ARRAY_DEFINE(ports, struct port_range);
 	struct port_range port;
 
 	ARRAY_CREATE(&ports, pool_datastack_create(), struct port_range, 4);
-	for( ; args->key != NULL; args++ ) {
-		if( strcmp(args->key, "port") == 0 && args->value != NULL ) {
-			const char *p = strchr(args->value, '-');
+	if( *port_str != '\0' ) {
+		const char *const *list = t_strsplit(port_str, ",");
 
-			port.first = atoi(t_strcut(args->value, '-'));
+		for( ; *list != NULL; list++) {
+			const char *p = strchr(*list, '-');
+
+			port.first = atoi(t_strcut(*list, '-'));
 			port.last = p == NULL ? port.first :
 					(unsigned int)atoi(p+1);
 			array_append(&ports, &port, 1);
