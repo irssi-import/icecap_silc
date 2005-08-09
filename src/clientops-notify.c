@@ -309,9 +309,11 @@ void i_silc_operation_notify(SilcClient client,
 			presence = presence_lookup(gwconn, old->nickname);
 			if( presence == NULL ) {
 				/* don't know, don't care */
+				fprintf(stderr, "foo1\n");
 				return;
 			}
 			if( presence_lookup(gwconn, new->nickname) != NULL )
+				fprintf(stderr, "foo2\n");
 				return; /* shouldn't happen, but ... */
 				
 			presence_set_name(presence, new->nickname);

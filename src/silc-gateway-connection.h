@@ -19,6 +19,7 @@ struct i_silc_gateway_connection {
 	SilcSchedule schedule;
 	SilcClientConnectionStatus connection_status;
 	struct timeout *timeout;
+	bool connected;
 };
 
 struct gateway_connection *

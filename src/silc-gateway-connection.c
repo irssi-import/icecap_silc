@@ -59,6 +59,8 @@ i_silc_gateway_connection_init(struct gateway *gw, struct local_presence *lp)
 					(hash_cmp_callback_t *)strcasecmp);
 	silc_gwconn->gwconn.connection = gw->connection;
 
+	silc_gwconn->connected = FALSE;
+
 	return &silc_gwconn->gwconn;
 }
 
@@ -85,10 +87,18 @@ static void event_gateway_connected(struct event *event)
 	silc_gwconn->conn = silc_client_add_connection(silc_gwconn->client,
 				NULL, gwconn->gateway->connection->hostname,
 				gwconn->port, NULL);
-	if( !silc_gwconn->conn ) printf("connection NOT added!\n");
+	if( !silc_gwconn->conn ) i_panic("connection NOT added!\n");
+
+	/* we're connected, let's start talking to server */
 	silc_client_start_key_exchange(silc_gwconn->client, silc_gwconn->conn,
 			silc_gwconn->gwconn.fd);
+
+	/* start calling silc lib periodically */
 	silc_gwconn->timeout = timeout_add(200, i_silc_scheduler, silc_gwconn->client);
+
+	if( !strcmp(silc_gwconn->client->username,
+				silc_gwconn->client->nickname) )
+		silc_gwconn->connected = TRUE;
 }
 
 static void event_gateway_disconnected(struct event *event)
