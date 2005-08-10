@@ -100,17 +100,17 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 			i_silc_gen_key_path(lp, TRUE),
 			"UN=irssi2,HN=localhost", "", &client->pkcs,
 			&client->public_key, &client->private_key, FALSE);
-		event = event_new(lu, "silc_keys_generated");
+		event = silc_event_new(lu, SILC_EVENT_KEY_KEYS_GENERATED);
 		event_send(event);
 	}
 
 	if( client->pkcs ) {
-		event = event_new(lu, "silc_keys_loaded");
+		event = silc_event_new(lu, SILC_EVENT_KEY_KEYS_LOADED);
 
 		pk = silc_pkcs_public_key_encode(client->public_key, &pk_len);
 		fingerprint = silc_hash_fingerprint(NULL, pk, pk_len);
 
-		event_add(event, "fingerprint", fingerprint);
+		event_add(event, SILC_EVENT_KEY_FINGERPRINT, fingerprint);
 		event_send(event);
 
 		free(pk);

@@ -1,3 +1,7 @@
+2005-08-10 21:00  Andrej Kacian <andrej@kacian.sk>
+	* src: silc.h, clientops.c, silc-client.c, clientops-notify.c: Use
+	       irssi2 macros for event key names where possible.
+
 2005-08-09 23:57  Andrej Kacian <andrej@kacian.sk>
 	* src: clientops.c, silc-channel-presence.[ch], clientops-notify.c
 	       silc-gateway-connection.[ch], silc.c: Only send

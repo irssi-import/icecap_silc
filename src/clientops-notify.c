@@ -35,6 +35,7 @@
 #include "channel-connection.h"
 #include "channel-presence.h"
 #include "presence.h"
+#include "messages.h"
 
 #include "clientops.h"
 #include "support.h"
@@ -102,11 +103,11 @@ void i_silc_operation_notify(SilcClient client,
 			str = va_arg(va, char *);
 
 			event = silc_event_new(lu, SILC_EVENT_NOTIFY_NONE);
-			event_add(event, "network",
+			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
-			event_add(event, "presence",
+			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
 					gwconn->local_presence->name);
-			event_add(event, "msg", str);
+			event_add(event, EVENT_KEY_MSG_TEXT, str);
 			event_send(event);
 			break;
 
@@ -116,11 +117,11 @@ void i_silc_operation_notify(SilcClient client,
 			client_entry = va_arg(va, SilcClientEntry);
 
 			event = silc_event_new(lu, SILC_EVENT_NOTIFY_INVITE);
-			event_add(event, "network",
+			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
-			event_add(event, "presence",
+			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
 					gwconn->local_presence->name);
-			event_add(event, "channel", str);
+			event_add(event, EVENT_KEY_CHANNEL_NAME, str);
 			event_add(event, "nickname", client_entry->nickname);
 			event_add(event, "username", client_entry->username);
 			event_add(event, "hostname", client_entry->hostname);
@@ -277,11 +278,11 @@ void i_silc_operation_notify(SilcClient client,
 
 			event = silc_event_new(lu,
 					SILC_EVENT_NOTIFY_KICK);
-			event_add(event, "channel",
+			event_add(event, EVENT_KEY_CHANNEL_CONN_NAME,
 					channel_entry->channel_name);
 			event_add(event, "kicker", kicker->nickname);
 			event_add(event, "target", kicked->nickname);
-			event_add(event, "msg", (str ? str : ""));
+			event_add(event, EVENT_KEY_MSG_TEXT, (str ? str : ""));
 			event_send(event);
 
 			if( kicked == silc_gwconn->conn->local_entry ) { 

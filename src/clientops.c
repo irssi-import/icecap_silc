@@ -81,7 +81,7 @@ void i_silc_operation_say(SilcClient client, SilcClientConnection conn,
 	va_start(va, msg);
 
 	vsnprintf(str, sizeof(str) - 1, msg, va);
-	event_add(event, "msg", str);
+	event_add(event, EVENT_KEY_MSG_TEXT, str);
 
 	va_end(va);
 
@@ -124,26 +124,26 @@ void i_silc_operation_channel_message(SilcClient client,
 			&mime_data_buffer, &mime_data_len);
 
 	
-	event_add(event, "network",
+	event_add(event, EVENT_KEY_NETWORK_NAME,
 			ichconn->gwconn->gateway->network->name);
-	event_add(event, "presence",
+	event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
 			ichconn->gwconn->local_presence->name);
-	event_add(event, "channel",
+	event_add(event, EVENT_KEY_CHANNEL_CONN_NAME,
 			ichconn->channel->name);
-	event_add(event, "nick", sender->nickname);
-	userhost = i_silc_userhost(sender);
-	event_add(event, "address", userhost);
+	event_add(event, EVENT_KEY_PRESENCE_NAME, sender->nickname);
 	free(userhost);
-	event_add_control(event, "gateway_connection", ichconn->gwconn);
+	event_add_control(event, EVENT_CONTROL_GWCONN, ichconn->gwconn);
 
 	if( valid_mime == TRUE ) {
 		header_length = message_len - mime_data_len;
 		sprintf(header_length_str, "%d", header_length);
-		event_add(event, "content_type", content_type);
-		event_add(event, "transfer_encoding", transfer_encoding);
-		event_add(event, "header_length", header_length_str);
+		event_add(event, SILC_EVENT_KEY_CONTENT_TYPE, content_type);
+		event_add(event, SILC_EVENT_KEY_TRANSFER_ENCODING,
+				transfer_encoding);
+		event_add(event, SILC_EVENT_KEY_HEADER_LENGTH,
+				header_length_str);
 	} else {
-		event_add(event, "msg", message);
+		event_add(event, EVENT_KEY_MSG_TEXT, message);
 	}
 
 	if( flags & SILC_MESSAGE_FLAG_SIGNED ) {
@@ -152,15 +152,15 @@ void i_silc_operation_channel_message(SilcClient client,
 		sgn = verify_message_signature(sender, sig, payload);
 		switch(sgn) {
 			case 1:
-				event_add(event, SILC_EVENT_SIGNATURE,
+				event_add(event, SILC_EVENT_KEY_SIGNATURE,
 						SILC_SIGSTATUS_VALID);
 				break;
 			case 0:
-				event_add(event, SILC_EVENT_SIGNATURE,
+				event_add(event, SILC_EVENT_KEY_SIGNATURE,
 						SILC_SIGSTATUS_INVALID);
 				break;
 			case -1:
-				event_add(event, SILC_EVENT_SIGNATURE,
+				event_add(event, SILC_EVENT_KEY_SIGNATURE,
 						SILC_SIGSTATUS_DUNNO);
 				break;
 		}

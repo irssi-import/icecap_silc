@@ -37,12 +37,15 @@ void i_silc_events_deinit(void);
 
 #define SILC_EVENT			"silc_event"
 
-#define SILC_EVENT_CONNECTED		"connected"
-
 #define SILC_EVENT_COMMAND_SUCCESS	"cmd_success"
 #define SILC_EVENT_COMMAND_FAIL		"cmd_fail"
 #define SILC_EVENT_ERROR		"error"
 #define SILC_EVENT_SERVER_SAY		"server_say"
+
+#define SILC_EVENT_KEY_KEYS_GENERATED	"silc_keys_generated"
+#define SILC_EVENT_KEY_KEYS_LOADED		"silc_keys_loaded"
+
+#define SILC_EVENT_KEY_FINGERPRINT	"fingerprint"
 
 #define SILC_EVENT_NOTIFY_NONE		"notify"
 #define SILC_EVENT_NOTIFY_MOTD		"motd"
@@ -54,7 +57,11 @@ void i_silc_events_deinit(void);
 #define SILC_EVENT_NOTIFY_NICK_CHANGE	"nick_change"
 #define SILC_EVENT_NOTIFY_TOPIC_SET	"topic_set"
 
-#define SILC_EVENT_SIGNATURE		"signature"
+#define SILC_EVENT_KEY_CONTENT_TYPE		"content_type"
+#define SILC_EVENT_KEY_TRANSFER_ENCODING	"transfer_encoding"
+#define SILC_EVENT_KEY_HEADER_LENGTH	"header_length"
+
+#define SILC_EVENT_KEY_SIGNATURE		"signature"
 #define SILC_SIGSTATUS_VALID		"valid"
 #define SILC_SIGSTATUS_INVALID		"invalid"
 #define SILC_SIGSTATUS_DUNNO		"dunno"
