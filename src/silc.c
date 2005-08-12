@@ -130,7 +130,6 @@ static void event_gateway_logged_in(struct event *event)
 			SILC_CLIENT_CONN_SUCCESS_RESUME ) {
 		event_add(event, "resumed", "yes");
 	}
-	silc_gwconn->connected = TRUE;
 }
 
 static struct event_bind_list events[] = {

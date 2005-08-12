@@ -52,7 +52,7 @@ i_silc_gateway_connection_init(struct gateway *gw, struct local_presence *lp)
 
 	silc_gwconn->client = i_silc_client_init(lp);
 
-	silc_gwconn->client->nickname = lp->name;
+//	silc_gwconn->client->nickname = lp->name;
 
 	silc_gwconn->gwconn.presences = hash_create(default_pool, default_pool,
 					0, (hash_callback_t *)strcase_hash,
@@ -96,9 +96,9 @@ static void event_gateway_connected(struct event *event)
 	/* start calling silc lib periodically */
 	silc_gwconn->timeout = timeout_add(200, i_silc_scheduler, silc_gwconn->client);
 
-	if( !strcasecmp(silc_gwconn->client->username,
-				silc_gwconn->client->nickname) )
-		silc_gwconn->connected = TRUE;
+//	if( !strcasecmp(silc_gwconn->client->username,
+//				silc_gwconn->client->nickname) )
+//		silc_gwconn->connected = TRUE;
 }
 
 static void event_gateway_disconnected(struct event *event)

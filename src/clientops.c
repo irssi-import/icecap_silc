@@ -234,9 +234,11 @@ void i_silc_operation_command_reply(SilcClient client,
 			client_id = va_arg(va, SilcClientID *);
 
 			if( !i_silc_client_id_is_me(silc_gwconn, client_id) ) {
-				if( silc_gwconn->connected == FALSE )
+				if( silc_gwconn->connected == FALSE ) {
 					gateway_connection_set_logged_in(
 							gwconn);
+					silc_gwconn->connected = TRUE;
+				}
 				return;
 			}
 
@@ -266,8 +268,6 @@ void i_silc_operation_connected(SilcClient client, SilcClientConnection conn,
 	switch(status) {
 		case SILC_CLIENT_CONN_SUCCESS:
 		case SILC_CLIENT_CONN_SUCCESS_RESUME:
-			if( silc_gwconn->connected == TRUE )
-				gateway_connection_set_logged_in(gwconn);
 			break;
 		case SILC_CLIENT_CONN_ERROR:
 			i_silc_client_close_connection(silc_gwconn);
@@ -282,6 +282,9 @@ void i_silc_operation_connected(SilcClient client, SilcClientConnection conn,
 			i_silc_client_close_connection(silc_gwconn);
 			break;
 		case SILC_CLIENT_CONN_ERROR_TIMEOUT:
+			i_silc_client_close_connection(silc_gwconn);
+			break;
+		default:
 			i_silc_client_close_connection(silc_gwconn);
 			break;
 	}

@@ -1,3 +1,9 @@
+2005-08-12 16:36  Andrej Kacian <andrej@kacian.sk>
+	* src: clientops.c, clientops-notify.c, silc-gateway-connection.c,
+	       silc.c: Don't let SILC client lib to set nickname on login,
+	       but set it ourselves. Add mypresence and network event keys
+	       to all silc_event events.
+
 2005-08-12 15:25  Andrej Kacian <andrej@kacian.sk>
 	* src: clientops.c: Handle unsuccesful channel join.
 
