@@ -96,7 +96,7 @@ static void event_gateway_connected(struct event *event)
 	/* start calling silc lib periodically */
 	silc_gwconn->timeout = timeout_add(200, i_silc_scheduler, silc_gwconn->client);
 
-	if( !strcmp(silc_gwconn->client->username,
+	if( !strcasecmp(silc_gwconn->client->username,
 				silc_gwconn->client->nickname) )
 		silc_gwconn->connected = TRUE;
 }
