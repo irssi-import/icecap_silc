@@ -96,7 +96,6 @@ void i_silc_operation_channel_message(SilcClient client,
 {
 	char content_type[128];
 	char transfer_encoding[128];
-	char *userhost;
 	unsigned char *mime_data_buffer;
 	SilcUInt32 mime_data_len;
 	bool valid_mime;
@@ -131,7 +130,6 @@ void i_silc_operation_channel_message(SilcClient client,
 	event_add(event, EVENT_KEY_CHANNEL_CONN_NAME,
 			ichconn->channel->name);
 	event_add(event, EVENT_KEY_PRESENCE_NAME, sender->nickname);
-	free(userhost);
 	event_add_control(event, EVENT_CONTROL_GWCONN, ichconn->gwconn);
 
 	if( valid_mime == TRUE ) {
@@ -217,10 +215,16 @@ void i_silc_operation_command_reply(SilcClient client,
 			silc_chconn =
 				(struct i_silc_channel_connection *)chconn;
 			silc_chconn->channel_entry = channel_entry;
-			channel_connection_set_joined(chconn);
-			channel_connection_set_topic(chconn,
+			if( success ) {
+				channel_connection_set_joined(chconn);
+				channel_connection_set_topic(chconn,
 					channel_entry->topic, NULL,
 					ioloop_time);
+			} else {
+				if( !chconn->joined )
+					channel_connection_deinit(chconn, NULL,
+							TRUE);
+			}
 			break;
 		case SILC_COMMAND_LEAVE:
 			break;
