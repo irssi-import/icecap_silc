@@ -287,7 +287,7 @@ void i_silc_operation_notify(SilcClient client,
 
 			if( kicked == silc_gwconn->conn->local_entry ) { 
 				/* we were kicked */
-				channel_connection_deinit(chconn, str);
+				channel_connection_deinit(chconn, str, TRUE);
 			} else {
 				chpres = channel_connection_lookup_presence(
 						chconn, kicked->nickname);
