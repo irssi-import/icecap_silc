@@ -225,9 +225,8 @@ void i_silc_operation_notify(SilcClient client,
 
 			free(userhost);
 
-			if( !SILC_ID_COMPARE(client_entry->id,
-					silc_gwconn->conn->local_entry->id,
-					sizeof(SilcClientID)) ) {
+			if( !i_silc_client_id_is_me(silc_gwconn,
+						client_entry->id) ) {
 				/* Someone else left */
 				silc_chconn =
 					i_silc_channel_connection_lookup(
@@ -322,6 +321,9 @@ void i_silc_operation_notify(SilcClient client,
 			old = va_arg(va, SilcClientEntry);
 			new = va_arg(va, SilcClientEntry);
 
+			if( !strcmp(old->nickname, new->nickname) )
+				break;
+
 			event = silc_event_new(lu,
 					SILC_EVENT_NOTIFY_NICK_CHANGE);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
@@ -335,12 +337,10 @@ void i_silc_operation_notify(SilcClient client,
 			presence = presence_lookup(gwconn, old->nickname);
 			if( presence == NULL ) {
 				/* don't know, don't care */
-				fprintf(stderr, "foo1\n");
-				return;
+				break;
 			}
 			if( presence_lookup(gwconn, new->nickname) != NULL )
-				fprintf(stderr, "foo2\n");
-				return; /* shouldn't happen, but ... */
+				break; /* shouldn't happen, but ... */
 				
 			presence_set_name(presence, new->nickname);
 			break;
