@@ -320,6 +320,8 @@ void i_silc_operation_notify(SilcClient client,
 		case SILC_NOTIFY_TYPE_NICK_CHANGE:
 			old = va_arg(va, SilcClientEntry);
 			new = va_arg(va, SilcClientEntry);
+			fprintf(stderr, "|%s| -> |%s|\n", old->nickname,
+					new->nickname);
 
 			if( !strcmp(old->nickname, new->nickname) )
 				break;
@@ -336,11 +338,14 @@ void i_silc_operation_notify(SilcClient client,
 
 			presence = presence_lookup(gwconn, old->nickname);
 			if( presence == NULL ) {
+				fprintf(stderr, "foo1\n");
 				/* don't know, don't care */
 				break;
 			}
-			if( presence_lookup(gwconn, new->nickname) != NULL )
+			if( presence_lookup(gwconn, new->nickname) != NULL ) {
+				fprintf(stderr, "foo2\n");
 				break; /* shouldn't happen, but ... */
+			}
 				
 			presence_set_name(presence, new->nickname);
 			break;

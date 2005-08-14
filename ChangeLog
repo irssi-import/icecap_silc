@@ -1,3 +1,8 @@
+2005-08-14 14:33  Andrej Kacian <andrej@kacian.sk>
+	* src: clientops-notify.c, support.c, silc-gateway-connection.c:
+	       Make presence name lookup functions case-sensitive. Add "raw"
+	       key to silc_events.
+
 2005-08-14 13:29  Andrej Kacian <andrej@kacian.sk>
 	* src/silc-channel-connection.c: Fixed segfault on channel connection
 	  deinit.

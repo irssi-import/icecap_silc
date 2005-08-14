@@ -41,6 +41,7 @@ unsigned int verify_message_signature(SilcClientEntry sender __attr_unused__,
 struct event *silc_event_new(struct local_user *local_user, const char *name)
 {
         struct event *event = event_new(local_user, SILC_EVENT);
+	event_add_bool(event, "raw");
         event_add(event, "event", name);
         return event;
 }

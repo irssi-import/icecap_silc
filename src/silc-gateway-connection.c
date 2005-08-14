@@ -55,8 +55,8 @@ i_silc_gateway_connection_init(struct gateway *gw, struct local_presence *lp)
 //	silc_gwconn->client->nickname = lp->name;
 
 	silc_gwconn->gwconn.presences = hash_create(default_pool, default_pool,
-					0, (hash_callback_t *)strcase_hash,
-					(hash_cmp_callback_t *)strcasecmp);
+					0, (hash_callback_t *)str_hash,
+					(hash_cmp_callback_t *)strcmp);
 	silc_gwconn->gwconn.connection = gw->connection;
 
 	silc_gwconn->connected = FALSE;
