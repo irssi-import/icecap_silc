@@ -30,6 +30,7 @@
 #include "gateway.h"
 #include "channel-presence.h"
 #include "tree.h"
+#include "client-commands.h"
 
 #include "silc.h"
 #include "support.h"
@@ -38,15 +39,18 @@
 #include "silc-presence.h"
 
 static struct event_bind_list events[];
+static struct client_command_bind_list silc_cmd_chconn[];
 
 void i_silc_channel_connection_events_init(void)
 {
 	event_bind_list(events, 0);
+	client_command_bind_list(silc_cmd_chconn, PRIORITY_DEFAULT);
 }
 
 void i_silc_channel_connection_events_deinit(void)
 {
 	event_unbind_list(events);
+	client_command_unbind_list(silc_cmd_chconn);
 }
 
 struct channel_connection *
@@ -92,21 +96,6 @@ void event_channel_connection_init(struct event *event)
 	silc_client_command_send(silc_gwconn->client, silc_gwconn->conn,
 			SILC_COMMAND_JOIN, 0, 2, 1, channel_str,
 			strlen(channel_str), 2, idp->data, idp->len);
-}
-
-void event_channel_connection_deinit(struct event *event)
-{
-	struct channel_connection *chconn = event_get_channel_conn(event);
-
-	if( !IS_SILC_CHCONN(chconn) )
-		return;
-
-	struct i_silc_gateway_connection *silc_gwconn =
-		(struct i_silc_gateway_connection *)chconn->gwconn;
-	const char *channel_str = chconn->channel->name;
-
-	silc_client_command_call(silc_gwconn->client, silc_gwconn->conn, NULL,
-						"LEAVE", channel_str, NULL);
 }
 
 struct i_silc_channel_connection *
@@ -242,9 +231,33 @@ static void event_joined(struct event *event)
 				refresh_nicklist_resolved, r);
 }
 
+static void silc_cmd_channel_part(struct event *event)
+{
+	const char *channel_name = event_get(event, EVENT_KEY_CHANNEL_NAME);
+	struct presence *presence;
+	struct channel_connection *chconn;
+	struct i_silc_gateway_connection *silc_gwconn;
+
+	if( !client_command_get_presence(event, &presence))
+		return;
+
+	silc_gwconn = (struct i_silc_gateway_connection *)presence->gwconn;
+	chconn = channel_connection_lookup(presence->gwconn, channel_name);
+	if( !IS_SILC_CHCONN(chconn) )
+		return;
+
+	if( chconn->joined == TRUE )
+		silc_client_command_call(silc_gwconn->client, silc_gwconn->conn,
+				NULL, "LEAVE", channel_name, NULL);
+}
+
 static struct event_bind_list events[] = {
 	{ NULL, EVENT_CHANNEL_CONN_JOIN, event_joined },
 	{ NULL, EVENT_CHANNEL_CONN_INIT, event_channel_connection_init },
-	{ NULL, EVENT_CHANNEL_CONN_DEINIT, event_channel_connection_deinit },
+	{ NULL, NULL, NULL }
+};
+
+static struct client_command_bind_list silc_cmd_chconn[] = {
+	{ NULL, "channel part", silc_cmd_channel_part },
 	{ NULL, NULL, NULL }
 };
