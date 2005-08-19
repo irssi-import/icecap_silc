@@ -32,14 +32,14 @@
 
 void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
 {
-	/* FIXME: stub! */
 	struct i_silc_gateway_connection *silc_gwconn =
 		(struct i_silc_gateway_connection *)gwconn;
 	struct network *network;
 	struct presence *presence;
 	const char *msg = event_get(event, EVENT_MSG);
-	const char *channel = event_get(event, "channel");
+	const char *channel = event_get(event, EVENT_KEY_CHANNEL_NAME);
 	const char *target = event_get(event, "target");
+	const char *type = event_get(event, "type");
 	struct i_silc_channel_connection *silc_chconn;
 	SilcMessageFlags sendflags = SILC_MESSAGE_FLAG_UTF8;
 
@@ -58,6 +58,9 @@ void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
 	}	
 
 	sendflags |= SILC_MESSAGE_FLAG_SIGNED;
+
+	if( !strcmp(type, "action") )
+		sendflags |= SILC_MESSAGE_FLAG_ACTION;
 
 	if( !client_command_get_network_presence(event, &network, &presence) )
 		return;

@@ -144,6 +144,9 @@ void i_silc_operation_channel_message(SilcClient client,
 		event_add(event, EVENT_KEY_MSG_TEXT, message);
 	}
 
+	if( flags & SILC_MESSAGE_FLAG_ACTION )
+		event_add(event, "type", "action");
+
 	if( flags & SILC_MESSAGE_FLAG_SIGNED ) {
 		SilcMessageSignedPayload sig =
 			silc_message_get_signature(payload);
