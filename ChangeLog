@@ -1,3 +1,7 @@
+2005-08-20 18:34  Andrej Kacian <andrej@kacian.sk>
+	* src/silc-local-presence.c, README: Client-provided SILC keys can be
+		used again. Fix some mistakes in README.
+
 2005-08-20 01:05  Andrej Kacian <andrej@kacian.sk>
 	* src: clientops.c, silc-message.c: Support actions
 

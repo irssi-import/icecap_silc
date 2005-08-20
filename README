@@ -50,7 +50,7 @@ Since private key file can contain any character (even EOF or '\0'), it has to
 be sent base64-encoded (you can use f.e. mimencode (mmencode on some systems)
 utility:
 
-$ mimencode mykey.pub | mimencode
+$ mimencode mykey.prv
 
 Passphrase ("passphrase") is being sent in plaintext - ensure that you're
 using a secure connection to irssi2 before sending it. If your private key
