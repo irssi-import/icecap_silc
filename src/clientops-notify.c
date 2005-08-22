@@ -210,6 +210,11 @@ void i_silc_operation_notify(SilcClient client,
 			client_entry = va_arg(va, SilcClientEntry);
 			channel_entry = va_arg(va, SilcChannelEntry);
 
+			if( client_entry->nickname == NULL ||
+			    client_entry->hostname == NULL ||
+			    client_entry->username == NULL )
+				break;
+
 			userhost = i_silc_userhost(client_entry);
 
 			event = silc_event_new(lu, SILC_EVENT_NOTIFY_LEAVE);

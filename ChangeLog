@@ -1,3 +1,8 @@
+2005-08-22 22:40  Andrej Kacian <andrej@kacian.sk>
+	* src/clientops-notify.c: Ignore anyone leaving the channel right
+	  after we joined, if we don't have the person added as presence.
+	* src/silc-message.[ch]: Wrote groundwork for private message sending.
+
 2005-08-20 18:34  Andrej Kacian <andrej@kacian.sk>
 	* src/silc-local-presence.c, README: Client-provided SILC keys can be
 		used again. Fix some mistakes in README.
