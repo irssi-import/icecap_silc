@@ -24,7 +24,7 @@
 #include "lib.h"
 #include "local-presence.h"
 #include "local-user.h"
-#include "event.h"
+#include "server-event.h"
 
 #include "silc.h"
 #include "silc-local-presence.h"
@@ -38,9 +38,9 @@ unsigned int verify_message_signature(SilcClientEntry sender __attr_unused__,
 }
 
 /* A convenience function for creating "silc_event" events. */
-struct event *silc_event_new(const char *name)
+struct event *silc_server_event_new(struct local_user *lu, const char *name)
 {
-        struct event *event = event_new(SILC_EVENT);
+        struct event *event = server_event_new(lu, SILC_EVENT);
 	event_add_bool(event, "raw");
         event_add(event, "event", name);
         return event;

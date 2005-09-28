@@ -1,3 +1,6 @@
+2005-09-28 15:47  Andrej Kacian <andrej@kacian.sk>
+	* src: Changed {silc_,}event_new to {silc_,}server_event_new
+
 2005-09-28 14:57  Andrej Kacian <andrej@kacian.sk>
 	* src: update to work with current irssi2 CVS
 
