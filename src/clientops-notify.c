@@ -49,7 +49,6 @@ void i_silc_operation_notify(SilcClient client,
 		SilcClientConnection conn,
 		SilcNotifyType type, ...)
 {
-	struct local_user *lu = client->application;
 	struct event *event;
 	struct gateway_connection *gwconn;
 	struct i_silc_gateway_connection *silc_gwconn;
@@ -102,7 +101,7 @@ void i_silc_operation_notify(SilcClient client,
 		case SILC_NOTIFY_TYPE_NONE:
 			str = va_arg(va, char *);
 
-			event = silc_event_new(lu, SILC_EVENT_NOTIFY_NONE);
+			event = silc_event_new(SILC_EVENT_NOTIFY_NONE);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -122,7 +121,7 @@ void i_silc_operation_notify(SilcClient client,
 			str = va_arg(va, char *);
 			client_entry = va_arg(va, SilcClientEntry);
 
-			event = silc_event_new(lu, SILC_EVENT_NOTIFY_INVITE);
+			event = silc_event_new(SILC_EVENT_NOTIFY_INVITE);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -138,7 +137,7 @@ void i_silc_operation_notify(SilcClient client,
 			client_entry = va_arg(va, SilcClientEntry);
 			channel_entry = va_arg(va, SilcChannelEntry);
 			
-			event = silc_event_new(lu, SILC_EVENT_NOTIFY_JOIN);
+			event = silc_event_new(SILC_EVENT_NOTIFY_JOIN);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -217,7 +216,7 @@ void i_silc_operation_notify(SilcClient client,
 
 			userhost = i_silc_userhost(client_entry);
 
-			event = silc_event_new(lu, SILC_EVENT_NOTIFY_LEAVE);
+			event = silc_event_new(SILC_EVENT_NOTIFY_LEAVE);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -256,7 +255,7 @@ void i_silc_operation_notify(SilcClient client,
 					client_entry->hostname != NULL )
 				userhost = i_silc_userhost(client_entry);
 
-			event = silc_event_new(lu, SILC_EVENT_NOTIFY_SIGNOFF);
+			event = silc_event_new(SILC_EVENT_NOTIFY_SIGNOFF);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -298,7 +297,7 @@ void i_silc_operation_notify(SilcClient client,
 			}
 			chconn = &silc_chconn->chconn;
 
-			event = silc_event_new(lu, SILC_EVENT_NOTIFY_KICK);
+			event = silc_event_new(SILC_EVENT_NOTIFY_KICK);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -331,8 +330,7 @@ void i_silc_operation_notify(SilcClient client,
 			if( !strcmp(old->nickname, new->nickname) )
 				break;
 
-			event = silc_event_new(lu,
-					SILC_EVENT_NOTIFY_NICK_CHANGE);
+			event = silc_event_new(SILC_EVENT_NOTIFY_NICK_CHANGE);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -384,7 +382,7 @@ void i_silc_operation_notify(SilcClient client,
 			str = va_arg(va, char *);
 			channel_entry2 = va_arg(va, SilcChannelEntry);
 
-			event = silc_event_new(lu, SILC_EVENT_NOTIFY_TOPIC_SET);
+			event = silc_event_new(SILC_EVENT_NOTIFY_TOPIC_SET);
 			event_add(event, EVENT_KEY_NETWORK_NAME,
 					gwconn->gateway->network->name);
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -407,7 +405,7 @@ void i_silc_operation_notify(SilcClient client,
 			break;		
 
 		default:
-			event = silc_event_new(lu, "unhandled");
+			event = silc_event_new("unhandled");
 			event_send(event);
 			break;
 	}

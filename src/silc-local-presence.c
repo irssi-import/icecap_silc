@@ -32,6 +32,7 @@
 #include "local-presence.h"
 #include "network.h"
 #include "base64.h"
+#include "array.h"
 
 #include "silc.h"
 #include "support.h"

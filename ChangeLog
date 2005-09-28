@@ -1,3 +1,6 @@
+2005-09-28 14:57  Andrej Kacian <andrej@kacian.sk>
+	* src: update to work with current irssi2 CVS
+
 2005-08-22 22:40  Andrej Kacian <andrej@kacian.sk>
 	* src/clientops-notify.c: Ignore anyone leaving the channel right
 	  after we joined, if we don't have the person added as presence.

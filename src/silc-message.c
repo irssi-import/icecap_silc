@@ -21,6 +21,7 @@
 
 #include "lib.h"
 #include "event.h"
+#include "event-private.h"
 #include "chat-protocol.h"
 #include "local-user.h"
 #include "client-commands.h"
@@ -42,8 +43,8 @@ void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
 	const char *type = event_get(event, "type");
 	struct i_silc_channel_connection *silc_chconn;
 	SilcMessageFlags sendflags = SILC_MESSAGE_FLAG_UTF8;
-	SilcClientEntry target_entry = NULL;
 	bool success;
+	struct i_privmsg_cb_t *i_privmsg_cb;
 
 	i_assert(channel != NULL);
 
@@ -51,13 +52,6 @@ void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
 		client_command_error(event, CLIENT_CMDERR_ARGS);
 		return;
 	}
-
-	silc_chconn = i_silc_channel_connection_lookup(silc_gwconn, channel);
-
-	if( silc_chconn == NULL ) {
-		client_command_error(event, CLIENT_CMDERR_NOT_FOUND);
-		return;
-	}	
 
 	sendflags |= SILC_MESSAGE_FLAG_SIGNED;
 
@@ -70,40 +64,62 @@ void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
 	/* At this point we know that either channel or target are given to us,
 	 * so we can do this. Channel takes priority if both are specified. */
 	if( *channel != '\0' ) {
+		silc_chconn = i_silc_channel_connection_lookup(silc_gwconn, channel);
+
+		if( silc_chconn == NULL ) {
+			client_command_error(event, CLIENT_CMDERR_NOT_FOUND);
+			return;
+		}	
+
 		success = silc_client_send_channel_message(silc_gwconn->client,
 										silc_gwconn->conn, silc_chconn->channel_entry,
 										silc_chconn->channel_entry->curr_key, sendflags,
 										(unsigned char *)msg,	strlen(msg), FALSE);
+		if( !success )
+			client_command_error(event, CLIENT_CMDERR_UNKNOWN);
 	} else {
+		i_privmsg_cb = malloc(sizeof(struct i_privmsg_cb_t));
+		i_privmsg_cb->msg = i_strdup(msg);
+		i_privmsg_cb->sendflags = sendflags;
+
 		silc_client_get_clients_whois(silc_gwconn->client, silc_gwconn->conn,
-										target, NULL, NULL, (SilcGetClientCallback)i_silc_privmsg_whois_callback,
-										(void *)target_entry);
-		if( target_entry == NULL ) {
-			/* Couldn't find such target, error to client and return */
-			client_command_error(event, CLIENT_CMDERR_NOT_FOUND);
-			return;
-		}
-
-		success = silc_client_send_private_message(silc_gwconn->client,
-										silc_gwconn->conn, target_entry, sendflags,
-										(unsigned char *)msg, strlen(msg), FALSE);
+										target, NULL, NULL,
+										(SilcGetClientCallback)i_silc_privmsg_whois_callback,
+										i_privmsg_cb);
 	}
-
-	if( !success )
-		client_command_error(event, CLIENT_CMDERR_UNKNOWN);
 }
 
 /* Return first found entry */
-void *i_silc_privmsg_whois_callback(SilcClient client,
+void i_silc_privmsg_whois_callback(SilcClient client,
 				SilcClientConnection conn, SilcClientEntry *clients, SilcUInt32 count,
-				void *target_entry)
+				void *i_privmsg_cb)
 {
-	if( clients == NULL ) {
-		target_entry = NULL;
-		return NULL;
+	char *msg = ((struct i_privmsg_cb_t *)i_privmsg_cb)->msg;
+	SilcMessageFlags sendflags =
+		((struct i_privmsg_cb_t *)i_privmsg_cb)->sendflags;
+	unsigned char *str_clientid;
+	SilcClientID *clientid;
+	SilcClientEntry cliententry;
+	bool success = FALSE;
+
+	if( count == 0 ) {
+		/* FIXME: not found error */
+		return;
 	}
 
-	target_entry = clients[0];
-	return NULL;
+	clientid = clients[0]->id;
+	str_clientid = silc_id_id2str(clientid, SILC_ID_CLIENT);
+	cliententry = silc_client_get_client_by_id(client, conn, clientid);
+
+	if( cliententry == NULL ) {
+		/* FIXME: not found error */
+		return;
+	}
+
+	success = silc_client_send_private_message(client, conn, cliententry,
+									sendflags, (unsigned char *)msg, strlen(msg), FALSE);
+	i_free(i_privmsg_cb);
+
+	/* FIXME: can't speak error if !success */
 }
-	
+

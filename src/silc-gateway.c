@@ -24,6 +24,7 @@
 #include "lib.h"
 #include "event.h"
 #include "connection.h"
+#include "array.h"
 
 #include "silc-gateway.h"
 

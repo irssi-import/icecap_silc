@@ -31,6 +31,7 @@
 #include "channel-presence.h"
 #include "tree.h"
 #include "client-commands.h"
+#include "array.h"
 
 #include "silc.h"
 #include "support.h"

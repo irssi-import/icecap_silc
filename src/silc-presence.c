@@ -24,6 +24,7 @@
 
 #include "lib.h"
 #include "presence.h"
+#include "local-presence.h"
 #include "gateway-connection.h"
 #include "chat-protocol.h"
 #include "event.h"
@@ -50,14 +51,17 @@ void i_silc_presence_deinit(struct presence *presence)
 	i_free(silc_presence);
 }
 
-void i_silc_presence_change_request(struct presence *presence,
-		struct event *event)
+void i_silc_presence_change_request(struct local_presence *lpresence,
+		struct event *event, presence_change_request_callback_t *cb,
+		void *context)
 {
 	struct i_silc_gateway_connection *silc_gwconn =
-		(struct i_silc_gateway_connection *)presence->gwconn;
+		(struct i_silc_gateway_connection *)lpresence->_gwconn;
 	const char *new_name = event_get(event, "new_name");
 
-	if( *new_name != '\0' )
+	if( *new_name == '\0' )
+		cb(CLIENT_CMDERR_ARGS, lpresence, context);
+	else
 		silc_client_command_call(silc_gwconn->client, silc_gwconn->conn,
 				NULL, "NICK", new_name, NULL);
 }

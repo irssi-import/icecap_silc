@@ -8,11 +8,16 @@
 #include "gateway-connection.h"
 #include "event.h"
 
+struct i_privmsg_cb_t {
+	char *msg;
+	SilcMessageFlags sendflags;
+};
+
 void i_silc_message_send(struct gateway_connection *gwconn,
 		struct event *event);
 
-void *i_silc_privmsg_whois_callback(SilcClient client,
+void i_silc_privmsg_whois_callback(SilcClient client,
 	SilcClientConnection conn, SilcClientEntry *clients, SilcUInt32 count,
-	void *target_entry);
+	void *i_privmsg_cb);
 
 #endif /* __SILC_MESSAGES_H */

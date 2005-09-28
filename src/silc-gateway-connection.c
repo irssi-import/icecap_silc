@@ -33,6 +33,7 @@
 #include "presence.h"
 #include "local-user.h"
 #include "local-presence.h"
+#include "array.h"
 
 #include "silc.h"
 #include "support.h"

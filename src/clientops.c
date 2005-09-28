@@ -74,9 +74,8 @@ void i_silc_operation_say(SilcClient client, SilcClientConnection conn,
 	struct event *event;
 	char str[256];
 	va_list va;
-	struct local_user *lu = client->application;
 
-	event = silc_event_new(lu, SILC_EVENT_SERVER_SAY);
+	event = silc_event_new(SILC_EVENT_SERVER_SAY);
 
 	va_start(va, msg);
 
@@ -103,7 +102,6 @@ void i_silc_operation_channel_message(SilcClient client,
 	char header_length_str[16];
 /*	bool error; */
 	struct event *event;
-	struct local_user *lu = client->application;
 	struct gateway_connection *gwconn =
 		i_silc_gateway_connection_lookup_conn(conn);
 	struct i_silc_gateway_connection *silc_gwconn =
@@ -112,17 +110,11 @@ void i_silc_operation_channel_message(SilcClient client,
 		i_silc_channel_connection_lookup_entry(silc_gwconn, channel);
 	struct channel_connection *ichconn = &silc_chconn->chconn;
 
-	event = event_new(lu, EVENT_MSG);
+	event = event_new(EVENT_MSG);
 
 	memset(content_type, 0, sizeof(content_type));
 	memset(transfer_encoding, 0, sizeof(transfer_encoding));
 
-	valid_mime = silc_mime_parse(message, message_len,
-			NULL, 0, content_type, sizeof(content_type) - 1,
-			transfer_encoding, sizeof(transfer_encoding) - 1,
-			&mime_data_buffer, &mime_data_len);
-
-	
 	event_add(event, EVENT_KEY_NETWORK_NAME,
 			ichconn->gwconn->gateway->network->name);
 	event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -132,6 +124,11 @@ void i_silc_operation_channel_message(SilcClient client,
 	event_add(event, EVENT_KEY_PRESENCE_NAME, sender->nickname);
 	event_add_control(event, EVENT_CONTROL_GWCONN, ichconn->gwconn);
 
+	valid_mime = silc_mime_parse(message, message_len,
+			NULL, 0, content_type, sizeof(content_type) - 1,
+			transfer_encoding, sizeof(transfer_encoding) - 1,
+			&mime_data_buffer, &mime_data_len);
+	
 	if( valid_mime == TRUE ) {
 		header_length = message_len - mime_data_len;
 		sprintf(header_length_str, "%d", header_length);
@@ -187,7 +184,6 @@ void i_silc_operation_command_reply(SilcClient client,
 		SilcClientConnection conn, SilcCommandPayload cmd_payload,
 		bool success, SilcCommand command, SilcStatus status, ...)
 {
-	struct local_user *lu = client->application;
 	struct channel_connection *chconn;
 	struct i_silc_channel_connection *silc_chconn;
 	struct event *event;
@@ -250,7 +246,7 @@ void i_silc_operation_command_reply(SilcClient client,
 				presence_set_name(presence, new_nick);
 			break;
 		case SILC_COMMAND_WHOIS:
-			event = silc_event_new(lu, "whoisreply");
+			event = silc_event_new("whoisreply");
 			event_send(event);
 			break;
 	}

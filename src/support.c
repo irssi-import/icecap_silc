@@ -38,9 +38,9 @@ unsigned int verify_message_signature(SilcClientEntry sender __attr_unused__,
 }
 
 /* A convenience function for creating "silc_event" events. */
-struct event *silc_event_new(struct local_user *local_user, const char *name)
+struct event *silc_event_new(const char *name)
 {
-        struct event *event = event_new(local_user, SILC_EVENT);
+        struct event *event = event_new(SILC_EVENT);
 	event_add_bool(event, "raw");
         event_add(event, "event", name);
         return event;
