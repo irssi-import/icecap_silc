@@ -1,3 +1,6 @@
+2005-09-29 17:32  Andrej Kacian <andrej@kacian.sk>
+	* src: Private messages work both ways now.
+
 2005-09-28 15:47  Andrej Kacian <andrej@kacian.sk>
 	* src: Changed {silc_,}event_new to {silc_,}server_event_new
 

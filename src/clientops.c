@@ -101,6 +101,7 @@ void i_silc_operation_channel_message(SilcClient client,
 	bool valid_mime;
 	unsigned int header_length, sgn;
 	char header_length_str[16];
+	char *userhost = i_silc_userhost(sender);
 /*	bool error; */
 	struct event *event;
 	struct gateway_connection *gwconn =
@@ -116,7 +117,8 @@ void i_silc_operation_channel_message(SilcClient client,
 
 	event_add_control(event, EVENT_CONTROL_GWCONN, ichconn->gwconn);
 	event_add(event, EVENT_KEY_PRESENCE_NAME, sender->nickname);
-	event_add(event, "address", "foo@bar.com");
+	event_add(event, "address", userhost);
+	i_free(userhost);
 	event_add(event, EVENT_KEY_NETWORK_NAME,
 			ichconn->gwconn->gateway->network->name);
 	event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
@@ -124,13 +126,13 @@ void i_silc_operation_channel_message(SilcClient client,
 	event_add(event, EVENT_KEY_CHANNEL_CONN_NAME,
 			ichconn->channel->name);
 
+	memset(content_type, 0, sizeof(content_type));
+	memset(transfer_encoding, 0, sizeof(transfer_encoding));
+
 	valid_mime = silc_mime_parse(message, message_len,
 			NULL, 0, content_type, sizeof(content_type) - 1,
 			transfer_encoding, sizeof(transfer_encoding) - 1,
 			&mime_data_buffer, &mime_data_len);
-	
-	memset(content_type, 0, sizeof(content_type));
-	memset(transfer_encoding, 0, sizeof(transfer_encoding));
 
 	if( valid_mime == TRUE ) {
 		header_length = message_len - mime_data_len;
@@ -175,6 +177,67 @@ void i_silc_operation_private_message(SilcClient client,
 		SilcMessagePayload payload, SilcMessageFlags flags,
 		const unsigned char *message, SilcUInt32 message_len)
 {
+	struct local_user *lu = client->application;
+	struct event *event;
+	struct gateway_connection *gwconn =
+					i_silc_gateway_connection_lookup_conn(conn);
+	char *userhost = i_silc_userhost(sender);
+	char content_type[128];
+	char transfer_encoding[128];
+	unsigned char *mime_data_buffer;
+	SilcUInt32 mime_data_len;
+	bool valid_mime;
+	unsigned int header_length, sgn;
+	char header_length_str[16];
+
+	event = server_event_new(lu, EVENT_MSG);
+
+	event_add_control(event, EVENT_CONTROL_GWCONN, gwconn);
+	event_add(event, EVENT_KEY_PRESENCE_NAME, sender->nickname);
+	event_add(event, "address", userhost);
+	i_free(userhost);
+	event_add(event, EVENT_KEY_NETWORK_NAME, gwconn->gateway->network->name);
+	event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
+									gwconn->local_presence->name);
+
+	memset(content_type, 0, sizeof(content_type));
+	memset(transfer_encoding, 0, sizeof(transfer_encoding));
+
+	valid_mime = silc_mime_parse(message, message_len, NULL, 0,
+									content_type, sizeof(content_type) - 1,
+									transfer_encoding, sizeof(transfer_encoding) - 1,
+									&mime_data_buffer, &mime_data_len);
+
+	if( valid_mime == TRUE ) {
+		header_length = message_len - mime_data_len;
+		sprintf(header_length_str, "%d", header_length);
+		event_add(event, SILC_EVENT_KEY_CONTENT_TYPE, content_type);
+		event_add(event, SILC_EVENT_KEY_TRANSFER_ENCODING, transfer_encoding);
+		event_add(event, SILC_EVENT_KEY_HEADER_LENGTH, header_length_str);
+	} else {
+		event_add(event, EVENT_KEY_MSG_TEXT, message);
+	}
+
+	if( flags & SILC_MESSAGE_FLAG_ACTION )
+		event_add(event, "type", "action");
+
+	if( flags & SILC_MESSAGE_FLAG_SIGNED ) {
+		SilcMessageSignedPayload sig = silc_message_get_signature(payload);
+		sgn = verify_message_signature(sender, sig, payload);
+		switch(sgn) {
+			case 1:
+				event_add(event, SILC_EVENT_KEY_SIGNATURE, SILC_SIGSTATUS_VALID);
+				break;
+			case 0:
+				event_add(event, SILC_EVENT_KEY_SIGNATURE, SILC_SIGSTATUS_INVALID);
+				break;
+			case -1:
+				event_add(event, SILC_EVENT_KEY_SIGNATURE, SILC_SIGSTATUS_DUNNO);
+				break;
+		}
+	}
+
+	event_send(event);
 }
 
 void i_silc_operation_command(SilcClient client, SilcClientConnection conn,

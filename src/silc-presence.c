@@ -95,6 +95,10 @@ void i_silc_presence_status_request(struct presence *presence,
 	}
 }
 
+/*
+ * Return a newly allocated "user@host" string made from client_entry info.
+ * Returned string must be freed!
+ */
 char *i_silc_userhost(SilcClientEntry client_entry)
 {
 	char *userhost = malloc(256);
