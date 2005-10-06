@@ -99,6 +99,36 @@ void event_channel_connection_init(struct event *event)
 			strlen(channel_str), 2, idp->data, idp->len);
 }
 
+void i_silc_channel_change_request(struct channel_connection *chconn,
+								struct event *event,
+								async_change_request_callback_t *cb,
+								struct client_async_cmd_context *context)
+{
+	const char *new_topic = event_get(event, "topic");
+	struct i_silc_channel_connection *silc_chconn =
+					(struct i_silc_channel_connection *)chconn;
+	struct i_silc_gateway_connection *silc_gwconn =
+					(struct i_silc_gateway_connection *)chconn->gwconn;
+	bool ret;
+	SilcChannelEntry ch = silc_chconn->channel_entry;
+	SilcClient client;
+	SilcClientConnection conn;
+
+	if( *new_topic == '\0' ) {
+		cb(CLIENT_CMDERR_ARGS, context);
+		return;
+	}
+
+	client = silc_gwconn->client;
+	conn = silc_gwconn->conn;
+
+	ret = silc_client_command_call(client, conn, NULL, "TOPIC", ch->channel_name,
+									new_topic, NULL);
+
+	if( !ret )
+		cb(CLIENT_CMDERR_SILC_CANTSEND, context);
+}
+
 struct i_silc_channel_connection *
 i_silc_channel_connection_lookup_entry(
 		struct i_silc_gateway_connection *silc_gwconn,

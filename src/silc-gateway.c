@@ -37,9 +37,13 @@ struct gateway*
 i_silc_gateway_init(const char *hostname, struct event *event)
 {
 	const char *port_str = event_get(event, "port");
+	const char *password = event_get(event, "password");
 	struct i_silc_gateway *silc_gw;
 	array_t ARRAY_DEFINE(ports, struct port_range);
 	struct port_range port;
+
+	silc_gw = i_new(struct i_silc_gateway, 1);
+	silc_gw->max_line_length = SILC_DEFAULT_MAX_LINE_LENGTH;
 
 	ARRAY_CREATE(&ports, pool_datastack_create(), struct port_range, 4);
 	if( *port_str != '\0' ) {
@@ -60,8 +64,11 @@ i_silc_gateway_init(const char *hostname, struct event *event)
 		array_append(&ports, &port, 1);
 	}
 
-	silc_gw = i_new(struct i_silc_gateway, 1);
-	silc_gw->max_line_length = SILC_DEFAULT_MAX_LINE_LENGTH;
+	if( *password != '\0' ) {
+		i_free(silc_gw->server_password);
+		silc_gw->server_password = i_strdup(password);
+	}
+
 	silc_gw->gateway.connection = connection_init(hostname, &ports, NULL);
 
 	return &silc_gw->gateway;
@@ -71,5 +78,6 @@ void i_silc_gateway_deinit(struct gateway *gw)
 {
 	struct i_silc_gateway *silc_gw = (struct i_silc_gateway *)gw;
 
+	i_free(silc_gw->server_password);
 	i_free(silc_gw);
 }

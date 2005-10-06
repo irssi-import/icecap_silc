@@ -1,3 +1,7 @@
+2005-10-06 19:31  Andrej Kacian <andrej@kacian.sk>
+	* src: Add support for password-protected servers. Support for
+	  channel change requests (only topic change for now).
+
 2005-09-29 17:32  Andrej Kacian <andrej@kacian.sk>
 	* src: Private messages work both ways now.
 

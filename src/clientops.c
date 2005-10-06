@@ -40,6 +40,7 @@
 #include "clientops.h"
 #include "support.h"
 #include "silc.h"
+#include "silc-gateway.h"
 #include "silc-gateway-connection.h"
 #include "silc-channel-connection.h"
 #include "silc-client.h"
@@ -433,6 +434,11 @@ void i_silc_get_auth_method_callback(SilcClient client,
 		void *context)
 {
 	InternalGetAuthMethod internal = (InternalGetAuthMethod)context;
+	struct gateway_connection *gwconn =
+					i_silc_gateway_connection_lookup_conn(conn);
+	struct i_silc_gateway *silc_gw =
+					(struct i_silc_gateway *)gwconn->gateway;
+	char *password = NULL;
 
 	switch(auth_meth) {
 		case SILC_AUTH_NONE:
@@ -442,6 +448,18 @@ void i_silc_get_auth_method_callback(SilcClient client,
 		case SILC_AUTH_PUBLIC_KEY:
 			(*internal->completion)(TRUE, auth_meth, NULL, 0,
 						internal->context);
+			break;
+		case SILC_AUTH_PASSWORD:
+			password = silc_gw->server_password;
+			if( password )
+				(*internal->completion)(TRUE, auth_meth,
+													password,
+													strlen(password),
+													internal->context);
+			else
+				(*internal->completion)(TRUE, auth_meth, NULL, 0,
+						internal->context);
+
 			break;
 	}
 

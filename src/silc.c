@@ -174,5 +174,7 @@ struct chat_protocol silc_protocol = {
 	i_silc_message_send,
 
 	i_silc_presence_change_request,
-	i_silc_presence_status_request
+	i_silc_presence_status_request,
+
+	i_silc_channel_change_request
 };

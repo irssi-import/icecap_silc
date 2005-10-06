@@ -70,4 +70,6 @@ void i_silc_events_deinit(void);
 #define SILC_EVENT_KEY_PRVKEY		"prv_key"
 #define SILC_EVENT_KEY_PASSPHRASE	"passphrase"
 
+#define CLIENT_CMDERR_SILC_CANTSEND	"cantsend"
+
 #endif /* __SILC_H */

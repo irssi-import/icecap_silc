@@ -51,19 +51,17 @@ void i_silc_presence_deinit(struct presence *presence)
 	i_free(silc_presence);
 }
 
-void i_silc_presence_change_request(struct local_presence *lpresence,
-		struct event *event, presence_change_request_callback_t *cb,
-		void *context)
+void i_silc_presence_change_request(struct presence *presence,
+		struct event *event)
 {
 	struct i_silc_gateway_connection *silc_gwconn =
-		(struct i_silc_gateway_connection *)lpresence->_gwconn;
-	const char *new_name = event_get(event, "new_name");
+		(struct i_silc_gateway_connection *)presence->gwconn;
+	const char *new_name = event_get(event, "name");
 
-	if( *new_name == '\0' )
-		cb(CLIENT_CMDERR_ARGS, lpresence, context);
-	else
-		silc_client_command_call(silc_gwconn->client, silc_gwconn->conn,
-				NULL, "NICK", new_name, NULL);
+	if( *new_name != '\0' )
+		silc_client_command_call(silc_gwconn->client,
+				silc_gwconn->conn, NULL, "NICK", new_name,
+				NULL);
 }
 
 void i_silc_presence_status_request(struct presence *presence,

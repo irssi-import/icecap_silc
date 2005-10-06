@@ -33,8 +33,14 @@ struct channel_connection *i_silc_channel_connection_init(
 				struct event *event);
 void i_silc_channel_connection_deinit(struct channel_connection *channel);
 
+void i_silc_channel_change_request(struct channel_connection *chconn,
+				struct event *event,
+				async_change_request_callback_t *cb,
+				struct client_async_cmd_context *ctx);
+
 void event_channel_connection_init(struct event *event);
 void event_channel_connection_deinit(struct event *event);
+
 /*
 static void refresh_nicklist_resolved(SilcClient client,
 		SilcClientConnection conn, SilcClientEntry *clients,

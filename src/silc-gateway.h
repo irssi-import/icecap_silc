@@ -8,6 +8,7 @@
 
 struct i_silc_gateway {
 	struct gateway gateway;
+	char *server_password;
 
 	unsigned int max_line_length;
 };
