@@ -1,3 +1,6 @@
+2005-11-11 20:47  Andrej Kacian <andrej@kacian.sk>
+	* src: Update to work with current irssi2 CVS
+
 2005-10-06 19:31  Andrej Kacian <andrej@kacian.sk>
 	* src: Add support for password-protected servers. Support for
 	  channel change requests (only topic change for now).

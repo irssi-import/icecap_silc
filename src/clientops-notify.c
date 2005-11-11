@@ -241,8 +241,7 @@ void i_silc_operation_notify(SilcClient client,
 				chpres = channel_connection_lookup_presence(
 						chconn,	client_entry->nickname);
 				if( chpres != NULL )
-					channel_connection_remove_presence(
-							chconn,	chpres, "");
+					channel_connection_remove_presence(chconn, chpres, NULL, "");
 			} else {
 				/* It is me (shouldn't happen) */
 			}
@@ -278,8 +277,7 @@ void i_silc_operation_notify(SilcClient client,
 					return;
 				}
 
-				channel_connections_remove_presence(gwconn,
-						presence, str ? str : "");
+				channel_connections_remove_presence(gwconn, presence, (str ? str : ""));
 			}
 			break;
 
@@ -317,8 +315,7 @@ void i_silc_operation_notify(SilcClient client,
 				chpres = channel_connection_lookup_presence(
 						chconn, kicked->nickname);
 				if( chpres != NULL )
-					channel_connection_remove_presence(
-							chconn, chpres, str);
+					channel_connection_remove_presence(chconn, chpres, "kick", str);
 			}
 			break;
 

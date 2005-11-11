@@ -146,7 +146,7 @@ struct chat_protocol silc_protocol = {
 	0,
 	"SILC",
 
-	SILC_DEFAULT_CHARSET,
+	SILC_DEFAULT_CHARSET, SILC_DEFAULT_CHARSET,
 
 	i_silc_alloc,
 
