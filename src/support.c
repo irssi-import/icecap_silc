@@ -1,5 +1,5 @@
 /*
- * Irssi2_silc - a SILC module for Irssi2
+ * Icecap_silc - a SILC module for Icecap
  * Copyright (C) 2005 Andrej Kacian
  *
  * - Support functions
@@ -50,7 +50,7 @@ char *i_silc_gen_key_path(struct local_presence *lp, bool private_key)
 {
 	char *path = malloc(512);
 
-	snprintf(path, 511, "%s/.irssi2/silc-gen-%s.%s", getenv("HOME"),
+	snprintf(path, 511, "%s/.icecap/silc-gen-%s.%s", getenv("HOME"),
 			lp->name, (private_key ? "prv" : "pub") );
 	return path;
 }

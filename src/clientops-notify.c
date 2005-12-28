@@ -1,5 +1,5 @@
 /*
- * Irssi2_silc - a SILC module for Irssi2
+ * Icecap_silc - a SILC module for Icecap
  * Copyright (C) 2005 Andrej Kacian
  *
  * - Function handler for SILC notify client operation

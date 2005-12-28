@@ -14,7 +14,7 @@ struct i_privmsg_cb_t {
 };
 
 void i_silc_message_send(struct gateway_connection *gwconn,
-		struct event *event);
+		struct event *event, struct event *reply);
 
 void i_silc_privmsg_whois_callback(SilcClient client,
 	SilcClientConnection conn, SilcClientEntry *clients, SilcUInt32 count,

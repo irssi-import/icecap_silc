@@ -1,5 +1,5 @@
 /*
- * Irssi2_silc - a SILC module for Irssi2
+ * Icecap_silc - a SILC module for Icecap
  * Copyright (C) 2005 Andrej Kacian
  *
  * - Functions related to SILC client itself
@@ -62,13 +62,13 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 
 	client->username = silc_get_username();
 	if( !client->username )
-		client->username = "irssi2";
+		client->username = "icecap";
 
 	client->hostname = silc_net_localhost();
 	if( !client->hostname )
 		client->hostname = "localhost"; /* shouldn't happen */
 
-	client->realname = "irssi2 is here!";
+	client->realname = "icecap is here!";
 	
 	silc_pkcs_register_default();
 	silc_hash_register_default();
@@ -97,7 +97,7 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	if( !client->pkcs ) {
 		silc_create_key_pair(NULL, 0, i_silc_gen_key_path(lp, FALSE),
 			i_silc_gen_key_path(lp, TRUE),
-			"UN=irssi2,HN=localhost", "", &client->pkcs,
+			"UN=icecap,HN=localhost", "", &client->pkcs,
 			&client->public_key, &client->private_key, FALSE);
 		event = silc_server_event_new(lu, SILC_EVENT_KEY_KEYS_GENERATED);
 		event_send(event);

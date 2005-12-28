@@ -1,5 +1,5 @@
 /*
- * Irssi2_silc - a SILC module for Irssi2
+ * Icecap_silc - a SILC module for Icecap
  * Copyright (C) 2005 Andrej Kacian
  *
  * - Functions related to struct i_silc_channel_connection
@@ -40,7 +40,7 @@
 #include "silc-presence.h"
 
 static struct event_bind_list events[];
-static struct client_command_bind_list silc_cmd_chconn[];
+static struct event_bind_list silc_cmd_chconn[];
 
 void i_silc_channel_connection_events_init(void)
 {
@@ -51,7 +51,7 @@ void i_silc_channel_connection_events_init(void)
 void i_silc_channel_connection_events_deinit(void)
 {
 	event_unbind_list(events);
-	client_command_unbind_list(silc_cmd_chconn);
+	event_unbind_list(silc_cmd_chconn);
 }
 
 struct channel_connection *
@@ -288,7 +288,7 @@ static struct event_bind_list events[] = {
 	{ NULL, NULL, NULL }
 };
 
-static struct client_command_bind_list silc_cmd_chconn[] = {
+static struct event_bind_list silc_cmd_chconn[] = {
 	{ NULL, "channel part", silc_cmd_channel_part },
 	{ NULL, NULL, NULL }
 };

@@ -1,5 +1,5 @@
 /*
- * Irssi2_silc - a SILC module for Irssi2
+ * Icecap_silc - a SILC module for Icecap
  * Copyright (C) 2005 Andrej Kacian
  *
  * - Functions for handling SILC messages
@@ -31,7 +31,8 @@
 #include "silc-gateway-connection.h"
 #include "silc-channel-connection.h"
 
-void i_silc_message_send(struct gateway_connection *gwconn, struct event *event)
+void i_silc_message_send(struct gateway_connection *gwconn,
+		struct event *event, struct event *reply)
 {
 	struct i_silc_gateway_connection *silc_gwconn =
 		(struct i_silc_gateway_connection *)gwconn;

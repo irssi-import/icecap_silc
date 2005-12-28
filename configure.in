@@ -2,14 +2,14 @@ AC_INIT(configure.in)
 AM_MAINTAINER_MODE
 version=0.0.1
 
-AM_INIT_AUTOMAKE(irssi2_silc, $version, andrej@kacian.sk)
+AM_INIT_AUTOMAKE(icecap_silc, $version, andrej@kacian.sk)
 AC_CONFIG_HEADER(config.h)
 
-AC_DEFINE([IRSSI2_SILC_VERSION], [], [Irssi2 SILC module version])
-AC_DEFINE_UNQUOTED(IRSSI2_SILC_VERSION, "${version}")
+AC_DEFINE([ICECAP_SILC_VERSION], [], [Icecap SILC module version])
+AC_DEFINE_UNQUOTED(ICECAP_SILC_VERSION, "${version}")
 
-IRSSI2_MODULEDIR=${libdir}/irssi2
-AC_SUBST(IRSSI2_MODULEDIR)
+ICECAP_MODULEDIR=${libdir}/icecap
+AC_SUBST(ICECAP_MODULEDIR)
 
 AC_PROG_CC
 AC_ISC_POSIX
@@ -83,17 +83,17 @@ AC_SUBST(SILC_LIBS)
 AC_SUBST(SILC_CFLAGS)
 AC_SUBST(SILC_LDFLAGS)
 
-irssi2_include=""
+icecap_include=""
 
-AC_MSG_CHECKING(whether to use user-provided path to Irssi2 includes )
-AC_ARG_WITH(silc-include,
-        [  --with-irssi2-include=PATH     Location of Irssi2 includes (optional,
-defaults to PREFIX/include/irssi2)) ],
+AC_MSG_CHECKING(whether to use user-provided path to Icecap includes )
+AC_ARG_WITH(icecap-include,
+        [  --with-icecap-include=PATH     Location of Icecap includes (optional,
+defaults to PREFIX/include/icecap)) ],
         [
                 case "${withval}" in
                 *)
                         AC_MSG_RESULT($withval)
-                        irssi2_include=$withval
+                        icecap_include=$withval
                         ;;
                 esac
         ],
@@ -106,14 +106,14 @@ if test ${prefix} != NONE ; then
     _prefix=${prefix}
 fi
 
-if test x${irssi2_include} = x ; then
-    irssi2_include="${_prefix}/include/irssi2"
+if test x${icecap_include} = x ; then
+    icecap_include="${_prefix}/include/icecap"
 fi
 
-IRSSI2_CFLAGS="-I${irssi2_include} -I${irssi2_include}/lib -I${irssi2_include}/server -I${irssi2_include}/lib-charset -I${irssi2_include}/lib-ssl-iostream"
+ICECAP_CFLAGS="-I${icecap_include} -I${icecap_include}/lib -I${icecap_include}/server -I${icecap_include}/lib-charset -I${icecap_include}/lib-ssl-iostream"
 
-AC_MSG_NOTICE(using IRSSI2_CFLAGS... ${IRSSI2_CFLAGS})
-AC_SUBST(IRSSI2_CFLAGS)
+AC_MSG_NOTICE(using ICECAP_CFLAGS... ${ICECAP_CFLAGS})
+AC_SUBST(ICECAP_CFLAGS)
 
 AC_OUTPUT([
 Makefile
@@ -121,5 +121,5 @@ src/Makefile
 ])
 
 echo
-echo "Configure finished, type \`make' to build irssi2_silc."
+echo "Configure finished, type \`make' to build icecap_silc."
 echo

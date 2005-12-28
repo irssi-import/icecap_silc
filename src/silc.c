@@ -1,5 +1,5 @@
 /*
- * Irssi2_silc - a SILC module for Irssi2
+ * Icecap_silc - a SILC module for Icecap
  * Copyright (C) 2005 Andrej Kacian
  *
  * - Module init and deinit, some support functions
@@ -45,15 +45,17 @@ static struct event_bind_list events[];
 static struct event_bind_list high_priority_events[];
 
 /* module init */
-void irssi2_silc_init()
+void icecap_silc_init()
 {
 	/* bind to the local user init event, and register protocol there */
 	i_silc_events_init();
-	silc_module_id = irssi2_module_id++;
+
+	/* init the module */
+	silc_module_id = server_module_id++;
 }
 
 /* module deinit */
-void irssi2_silc_deinit()
+void icecap_silc_deinit()
 {
 	i_silc_events_deinit();
 }
@@ -86,7 +88,7 @@ void i_silc_scheduler(void *client)
 
 
 /* A wrapper that calls silc_client_close_connection() and sets gwconn's fd
- * to -1, so irssi2 won't try to close it */
+ * to -1, so icecap won't try to close it */
 void i_silc_client_close_connection(struct i_silc_gateway_connection *
 		silc_gwconn)
 {

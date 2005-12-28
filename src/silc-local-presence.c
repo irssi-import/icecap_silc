@@ -1,8 +1,8 @@
 /*
- * Irssi2_silc - a SILC module for Irssi2
+ * Icecap_silc - a SILC module for Icecap
  * Copyright (C) 2005 Andrej Kacian
  *
- * - SILC-specific unctions related to irssi2's struct presence
+ * - SILC-specific unctions related to icecap's struct presence
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@
 
 extern unsigned int silc_module_id;
 
-static struct client_command_bind_list silc_cmd_presence_low[];
+static struct event_bind_list silc_cmd_presence_low[];
 
 void i_silc_presence_commands_init(void)
 {
@@ -50,7 +50,7 @@ void i_silc_presence_commands_init(void)
 }
 
 void i_silc_presence_commands_deinit(void){
-	client_command_unbind_list(silc_cmd_presence_low);
+	event_unbind_list(silc_cmd_presence_low);
 }
 
 static void silc_cmd_presence_add_low(struct event *event)
@@ -101,7 +101,7 @@ static void silc_cmd_presence_add_low(struct event *event)
 	}
 }
 
-static struct client_command_bind_list silc_cmd_presence_low[] = {
+static struct event_bind_list silc_cmd_presence_low[] = {
 	{ NULL, "presence add", silc_cmd_presence_add_low },
 	{ NULL, NULL, NULL }
 };

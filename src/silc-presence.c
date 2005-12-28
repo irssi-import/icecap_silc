@@ -1,8 +1,8 @@
 /*
- * Irssi2_silc - a SILC module for Irssi2
+ * Icecap_silc - a SILC module for Icecap
  * Copyright (C) 2005 Andrej Kacian
  *
- * - SILC-specific unctions related to irssi2's struct presence
+ * - SILC-specific unctions related to icecap's struct presence
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,17 +51,21 @@ void i_silc_presence_deinit(struct presence *presence)
 	i_free(silc_presence);
 }
 
-void i_silc_presence_change_request(struct presence *presence,
-		struct event *event)
+void i_silc_presence_change_request(struct local_presence *lp,
+		struct event *event, async_change_request_callback_t *cb,
+		struct client_async_cmd_context *context)
 {
 	struct i_silc_gateway_connection *silc_gwconn =
-		(struct i_silc_gateway_connection *)presence->gwconn;
+		(struct i_silc_gateway_connection *)lp->_gwconn;
 	const char *new_name = event_get(event, "name");
 
-	if( *new_name != '\0' )
-		silc_client_command_call(silc_gwconn->client,
-				silc_gwconn->conn, NULL, "NICK", new_name,
-				NULL);
+	if( *new_name == '\0' ) {
+		cb(CLIENT_CMDERR_ARGS, context);
+		return;
+	}
+
+	silc_client_command_call(silc_gwconn->client,	silc_gwconn->conn,
+			NULL, "NICK", new_name, NULL);
 }
 
 void i_silc_presence_status_request(struct presence *presence,
