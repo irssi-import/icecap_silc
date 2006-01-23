@@ -302,14 +302,13 @@ void i_silc_operation_command_reply(SilcClient client,
 
 			if( !i_silc_client_id_is_me(silc_gwconn, client_id) ) {
 				if( silc_gwconn->connected == FALSE ) {
-					gateway_connection_set_logged_in(
-							gwconn);
+					gateway_connection_set_logged_in(gwconn);
 					silc_gwconn->connected = TRUE;
 				}
 				return;
 			}
 
-			presence = gwconn->local_presence->_presence;
+			presence = local_presence_get_presence(gwconn->local_presence);
 			if( strcmp(presence->name, new_nick) != 0 )
 				presence_set_name(presence, new_nick);
 			break;
