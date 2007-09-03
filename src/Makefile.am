@@ -13,10 +13,9 @@ icecap_silc_la_LDFLAGS = \
 	$(SILC_LIBS)
 
 icecap_silc_la_SOURCES = \
-	base64.c base64.h \
 	clientops.c clientops.h \
 	clientops-notify.c \
-	silc.c silc.h \
+	icecap-silc.c icecap-silc.h \
 	silc-client.c silc-client.h \
 	silc-channel.c silc-channel.h \
 	silc-channel-connection.c silc-channel-connection.h \

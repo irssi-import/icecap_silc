@@ -1,10 +1,9 @@
 #ifndef __SILC_GATEWAY_CONNECTION_H
 #define __SILC_GATEWAY_CONNECTION_H
 
-#include <silcincludes.h>
-#include <silcclient.h>
+#include <silc.h>
 
-#include "gateway-connection.h"
+#include <server/gateway-connection.h>
 
 #define IS_SILC_GWCONN(gwconn) \
 	(strcmp((gwconn->gateway->network->protocol)->name, "SILC") == 0)

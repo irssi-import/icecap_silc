@@ -3,7 +3,7 @@ AM_MAINTAINER_MODE
 version=0.0.1
 
 AM_INIT_AUTOMAKE(icecap_silc, $version, andrej@kacian.sk)
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADER(icecap-silc-config.h)
 
 AC_DEFINE([ICECAP_SILC_VERSION], [], [Icecap SILC module version])
 AC_DEFINE_UNQUOTED(ICECAP_SILC_VERSION, "${version}")
@@ -110,7 +110,9 @@ if test x${icecap_include} = x ; then
     icecap_include="${_prefix}/include/icecap"
 fi
 
-ICECAP_CFLAGS="-I${icecap_include} -I${icecap_include}/lib -I${icecap_include}/server -I${icecap_include}/lib-charset -I${icecap_include}/lib-ssl-iostream"
+ICECAP_CFLAGS="-I${icecap_include} \
+-I${icecap_include}/lib \
+-I${icecap_include}/server"
 
 AC_MSG_NOTICE(using ICECAP_CFLAGS... ${ICECAP_CFLAGS})
 AC_SUBST(ICECAP_CFLAGS)

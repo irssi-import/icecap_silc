@@ -19,27 +19,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-#include <silcincludes.h>
-#include <silcclient.h>
 #include <stdarg.h>
 
-#include "lib.h"
-#include "ioloop.h"
-#include "chat-protocol.h"
-#include "server-event.h"
-#include "local-user.h"
-#include "local-presence.h"
-#include "gateway-connection.h"
-#include "network.h"
-#include "gateway.h"
-#include "channel-connection.h"
-#include "messages.h"
-#include "presence.h"
+#include <lib/lib.h>
+#include <lib/ioloop.h>
+#include <server/chat-protocol.h>
+#include <server/server-event.h>
+#include <server/local-user.h>
+#include <server/local-presence.h>
+#include <server/gateway-connection.h>
+#include <server/network.h>
+#include <server/gateway.h>
+#include <server/channel-connection.h>
+#include <server/messages.h>
+#include <server/presence.h>
+
+#include <silc.h>
+#include <silcclient.h>
 
 #include "clientops.h"
 #include "support.h"
-#include "silc.h"
+#include "icecap-silc.h"
 #include "silc-gateway.h"
 #include "silc-gateway-connection.h"
 #include "silc-channel-connection.h"

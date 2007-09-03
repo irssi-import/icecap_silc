@@ -1,8 +1,7 @@
 #ifndef __SILC_H
 #define __SILC_H
 
-#include <silcincludes.h>
-#include <silcclient.h>
+#include <silc.h>
 
 #include "lib.h"
 #include "chat-protocol.h"

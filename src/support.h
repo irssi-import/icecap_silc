@@ -1,10 +1,9 @@
 #ifndef __SUPPORT_H
 #define __SUPPORT_H
 
-#include <silcincludes.h>
-#include <silcclient.h>
+#include <silc.h>
 
-#include "lib.h"
+#include <lib/lib.h>
 
 #include "silc-local-presence.h"
 

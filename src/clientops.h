@@ -1,10 +1,21 @@
 #ifndef __CLIENTOPERATIONS_H
 #define __CLIENTOPERATIONS_H
 
+#include <silc.h>
+#include <silcclient.h>
+
 void i_silc_operation_say(SilcClient client, SilcClientConnection conn,
 		SilcClientMessageType type, char *msg, ...);
 
-void i_silc_operation_channel_message(SilcClient client,                                        SilcClientConnection conn, SilcClientEntry sender,                              SilcChannelEntry channel, SilcMessagePayload payload,                           SilcChannelPrivateKey key, SilcMessageFlags flags,                              const unsigned char *message, SilcUInt32 message_len);
+void i_silc_operation_channel_message(SilcClient client,
+		SilcClientConnection conn,
+		SilcClientEntry sender,
+		SilcChannelEntry channel,
+		SilcMessagePayload payload,
+		SilcChannelPrivateKey key,
+		SilcMessageFlags flags,
+		const unsigned char *message,
+		SilcUInt32 message_len);
 
 void i_silc_operation_private_message(SilcClient client,
 		SilcClientConnection conn, SilcClientEntry sender,
