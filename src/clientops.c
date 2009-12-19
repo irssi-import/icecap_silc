@@ -58,15 +58,11 @@ SilcClientOperations ops = {
     i_silc_operation_notify,
     i_silc_operation_command,
     i_silc_operation_command_reply,
-    i_silc_operation_connected,
-    i_silc_operation_disconnected,
     i_silc_operation_get_auth_method,
     i_silc_operation_verify_public_key,
     i_silc_operation_ask_passphrase,
-    i_silc_operation_failure,
     i_silc_operation_key_agreement,
-    i_silc_operation_ftp,
-    i_silc_operation_detach
+    i_silc_operation_ftp
 };
 
 void i_silc_operation_say(SilcClient client, SilcClientConnection conn,
@@ -242,14 +238,14 @@ void i_silc_operation_private_message(SilcClient client,
 }
 
 void i_silc_operation_command(SilcClient client, SilcClientConnection conn,
-		SilcClientCommandContext cmd_context, bool success,
-		SilcCommand command, SilcStatus status)
+		SilcBool success, SilcCommand command, SilcStatus status,
+		SilcUInt32 argc unsigned char **argv)
 {
 }
 
 void i_silc_operation_command_reply(SilcClient client,
-		SilcClientConnection conn, SilcCommandPayload cmd_payload,
-		bool success, SilcCommand command, SilcStatus status, ...)
+		SilcClientConnection conn, SilcCommand command,
+		SilcStatus status, SilcStatus error, va_list va)
 {
 	struct channel_connection *chconn;
 	struct i_silc_channel_connection *silc_chconn;
@@ -263,10 +259,7 @@ void i_silc_operation_command_reply(SilcClient client,
 	SilcClientID *client_id;
 	struct presence *presence;
 	char *channel_name, *new_nick;
-	va_list va;
 	struct local_user *lu = client->application;
-
-	va_start(va, status);
 
 	switch(command) {
 		case SILC_COMMAND_JOIN:
@@ -356,15 +349,9 @@ void i_silc_operation_connected(SilcClient client, SilcClientConnection conn,
 	}
 }
 
-void i_silc_operation_disconnected(SilcClient client, SilcClientConnection conn,
-		SilcStatus status, const char *message)
-{
-	printf(">>>>>>>>>>>>>>>>>>>>>> disconnected\n");
-}
-
 void i_silc_operation_get_auth_method(SilcClient client,
 		SilcClientConnection conn, char *hostname, SilcUInt16 port,
-		SilcGetAuthMeth completion, void *context)
+		SilcAuthMethod auth_method, SilcGetAuthMeth completion, void *context)
 {
 	InternalGetAuthMethod internal;
 
@@ -377,9 +364,8 @@ void i_silc_operation_get_auth_method(SilcClient client,
 }
 
 void i_silc_operation_verify_public_key(SilcClient client,
-		SilcClientConnection conn, SilcSocketType conn_type,
-		unsigned char *pk, SilcUInt32 pk_len, SilcSKEPKType pk_type,
-		SilcVerifyPublicKey completion, void *context)
+		SilcClientConnection conn, SilcConnectionType conn_type,
+		SilcPublicKey public_key, SilcVerifyPublicKey completion, void *context)
 {
 	SilcPublicKey pkey;
 	bool ret;
@@ -409,8 +395,7 @@ void i_silc_operation_failure(SilcClient client, SilcClientConnection conn,
 
 bool i_silc_operation_key_agreement(SilcClient client,
 		SilcClientConnection conn, SilcClientEntry client_entry,
-		const char *hostname, SilcUInt16 port,
-		SilcKeyAgreementCallback *completion, void **context)
+		const char *hostname, SilcUInt16 protocol, SilcUInt16 port)
 {
 	printf(">>>>>>>>>>>>>>>>>>>>>>>>> key_agreement\n");
 	return FALSE;

@@ -1,7 +1,7 @@
 #ifndef __SILC_CLIENT_H
 #define __SILC_CLIENT_H
 
-#include <silcincludes.h>
+#include <silc.h>
 #include <silcclient.h>
 
 #include "local-presence.h"

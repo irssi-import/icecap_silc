@@ -1,7 +1,7 @@
 #ifndef __SILC_CHANNEL_CONNECTION_H
 #define __SILC_CHANNEL_CONNECTION_H
 
-#include <silcincludes.h>
+#include <silc.h>
 #include <silcclient.h>
 
 #include "channel-connection.h"
