@@ -46,6 +46,7 @@ void i_silc_message_send(struct gateway_connection *gwconn,
 	SilcMessageFlags sendflags = SILC_MESSAGE_FLAG_UTF8;
 	bool success;
 	struct i_privmsg_cb_t *i_privmsg_cb;
+	SilcHash sha1;
 
 	i_assert(channel != NULL);
 
@@ -72,10 +73,12 @@ void i_silc_message_send(struct gateway_connection *gwconn,
 			return;
 		}	
 
+		silc_hash_alloc((unsigned char *)"sha1", &sha1);
 		success = silc_client_send_channel_message(silc_gwconn->client,
 										silc_gwconn->conn, silc_chconn->channel_entry,
-										silc_chconn->channel_entry->curr_key, sendflags,
-										(unsigned char *)msg,	strlen(msg), FALSE);
+										NULL, sendflags, sha1,
+										(unsigned char *)msg,	strlen(msg));
+		silc_hash_free(sha1);
 		if( !success )
 			client_command_error(event, CLIENT_CMDERR_UNKNOWN);
 	} else {

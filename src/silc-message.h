@@ -1,7 +1,7 @@
 #ifndef __SILC_MESSAGES_H
 #define __SILC_MESSAGES_H
 
-#include <silcincludes.h>
+#include <silc.h>
 #include <silcclient.h>
 
 #include "lib.h"

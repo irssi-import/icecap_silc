@@ -19,14 +19,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <silc.h>
-#include <silcclient.h>
-
 #include "lib.h"
 #include "chat-protocol.h"
+#include "module-context.h"
 #include "network.h"
 #include "local-user.h"
 #include "module.h"
+
+#include <silc.h>
+#include <silcclient.h>
 
 #include "silc.h"
 #include "silc-client.h"
@@ -39,7 +40,7 @@
 #include "silc-presence.h"
 #include "support.h"
 
-unsigned int silc_module_id;
+#include "icecap-silc.h"
 
 static struct event_bind_list events[];
 static struct event_bind_list high_priority_events[];
@@ -49,9 +50,6 @@ void icecap_silc_init()
 {
 	/* bind to the local user init event, and register protocol there */
 	i_silc_events_init();
-
-	/* init the module */
-	silc_module_id = server_module_id++;
 }
 
 /* module deinit */
@@ -65,7 +63,7 @@ static struct chat_protocol *i_silc_alloc(void)
 	return i_new(struct chat_protocol, 1);
 }
 
-static void i_silc_init(struct chat_protocol *protocol __attr_unused__)
+static void i_silc_init(struct chat_protocol *protocol)
 {
 	i_silc_gateway_connection_events_init();
 	i_silc_channel_connection_events_init();
@@ -73,7 +71,7 @@ static void i_silc_init(struct chat_protocol *protocol __attr_unused__)
 	i_silc_presence_commands_init();
 }
 
-static void i_silc_deinit(struct chat_protocol *protocol __attr_unused__)
+static void i_silc_deinit(struct chat_protocol *protocol)
 {
 	i_silc_gateway_connection_events_deinit();
 	i_silc_channel_connection_events_deinit();
@@ -116,7 +114,7 @@ static void event_local_user_init(struct event *event)
 static void event_gateway_logged_in(struct event *event)
 {
 	struct gateway_connection *gwconn =
-		event_get_control(event, "gateway_connection");
+		event_get_control(event, gwconn);
 
 	i_assert(gwconn != NULL);
 

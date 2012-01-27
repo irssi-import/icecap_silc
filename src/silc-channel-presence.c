@@ -19,9 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <silcincludes.h>
-#include <silcclient.h>
-
 #include "lib.h"
 #include "event.h"
 #include "tree.h"
@@ -32,7 +29,9 @@
 #include "gateway.h"
 #include "tree.h"
 
-#include "silc.h"
+#include <silc.h>
+#include <silcclient.h>
+
 #include "support.h"
 #include "silc-channel.h"
 #include "silc-presence.h"

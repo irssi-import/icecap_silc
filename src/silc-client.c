@@ -19,20 +19,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <silcincludes.h>
-#include <silcclient.h>
-
 #include "lib.h"
 #include "base64.h"
 #include "chat-protocol.h"
 #include "event.h"
 #include "local-presence.h"
 
-#include "silc.h"
+#include <silc.h>
+#include <silcclient.h>
+
+#include "icecap-silc.h"
 #include "support.h"
 #include "silc-client.h"
 #include "silc-presence.h"
 #include "silc-local-presence.h"
+
+SilcPublicKey public_key = NULL;
+SilcPrivateKey private_key = NULL;
 
 extern SilcClientOperations ops;
 extern unsigned int silc_module_id;
@@ -43,20 +46,15 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 	SilcClientParams params;
 	struct event *event;
 	struct local_user *lu = lp->local_user;
-	struct i_silc_local_presence_auth *const *_auth;
-	struct i_silc_local_presence_auth *auth;
+//	struct i_silc_local_presence_auth *const *_auth;
+//	struct i_silc_local_presence_auth *auth;
 	char *fingerprint;
 	unsigned char *pk;
 	SilcUInt32 pk_len;
 
-	params.task_max = 200;
-	params.rekey_secs = 0;			/* use default */
-	params.connauth_request_secs = 0; 	/* use default */
 	strncpy(params.nickname_format, "%n@%h%a",
 			sizeof(params.nickname_format) - 1);
 	params.nickname_force_format = FALSE;
-	params.nickname_parse = &i_silc_client_nickname_parse;
-	params.ignore_requested_attributes = TRUE;
 
 	client = silc_client_alloc(&ops, &params, lu, NULL);
 
@@ -87,54 +85,48 @@ SilcClient i_silc_client_init(struct local_presence *lp)
 //	}
 
 	/* Use some pre-generated keys for now */
-	if( !client->pkcs ) {
+	if( !private_key->pkcs ) {
 		silc_load_key_pair(i_silc_gen_key_path(lp, FALSE),
-			i_silc_gen_key_path(lp, TRUE), "", &client->pkcs,
-			&client->public_key, &client->private_key);
+			i_silc_gen_key_path(lp, TRUE), "", &public_key, &private_key);
 	}
 
 	/* Generate a keypair for use */
-	if( !client->pkcs ) {
+	if( !private_key->pkcs ) {
 		silc_create_key_pair(NULL, 0, i_silc_gen_key_path(lp, FALSE),
 			i_silc_gen_key_path(lp, TRUE),
-			"UN=icecap,HN=localhost", "", &client->pkcs,
-			&client->public_key, &client->private_key, FALSE);
+			"UN=icecap,HN=localhost", "", &public_key, &private_key, FALSE);
 		event = silc_server_event_new(lu, SILC_EVENT_KEY_KEYS_GENERATED);
-		event_send(event);
+		event_send(&event);
 	}
 
-	if( client->pkcs ) {
+	if( !private_key->pkcs ) {
 		event = silc_server_event_new(lu, SILC_EVENT_KEY_KEYS_LOADED);
 
-		pk = silc_pkcs_public_key_encode(client->public_key, &pk_len);
+		pk = silc_pkcs_public_key_encode(public_key, &pk_len);
 		fingerprint = silc_hash_fingerprint(NULL, pk, pk_len);
 
 		event_add(event, SILC_EVENT_KEY_FINGERPRINT, fingerprint);
-		event_send(event);
+		event_send(&event);
 
 		free(pk);
 		free(fingerprint);
 	}
 
-	silc_client_init(client);
+	silc_client_init(client, client->username, client->hostname,
+			client->realname, NULL, NULL);
 	return client;
 }
 
 void i_silc_client_deinit(SilcClient client, SilcClientConnection conn)
 {
-	silc_client_del_connection(client, conn);
+	silc_client_close_connection(client, conn);
 	silc_client_free(client);
-}
-
-void i_silc_client_nickname_parse(const char *nickname, char **return_nickname)
-{
-	*return_nickname = i_strdup(nickname);
 }
 
 bool i_silc_client_id_is_me(struct i_silc_gateway_connection *silc_gwconn,
 				SilcClientID *id)
 {
-	if( SILC_ID_COMPARE(silc_gwconn->conn->local_entry->id, id,
+	if( SILC_ID_COMPARE(silc_gwconn->conn->local_id, id,
 				sizeof(SilcClientID)) )
 		return TRUE;
 	return FALSE;

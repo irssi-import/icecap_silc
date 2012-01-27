@@ -39,13 +39,13 @@ i_silc_gateway_init(const char *hostname, struct event *event)
 	const char *port_str = event_get(event, "port");
 	const char *password = event_get(event, "password");
 	struct i_silc_gateway *silc_gw;
-	array_t ARRAY_DEFINE(ports, struct port_range);
+	ARRAY_TYPE(port_range) ports;
 	struct port_range port;
 
 	silc_gw = i_new(struct i_silc_gateway, 1);
 	silc_gw->max_line_length = SILC_DEFAULT_MAX_LINE_LENGTH;
 
-	ARRAY_CREATE(&ports, pool_datastack_create(), struct port_range, 4);
+	t_array_init(&ports, 4);
 	if( *port_str != '\0' ) {
 		const char *const *list = t_strsplit(port_str, ",");
 

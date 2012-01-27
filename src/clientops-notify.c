@@ -19,25 +19,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <silcincludes.h>
-#include <silcclient.h>
 #include <stdarg.h>
 
-#include "lib.h"
-#include "ioloop.h"
-#include "chat-protocol.h"
-#include "event.h"
-#include "local-user.h"
-#include "local-presence.h"
-#include "gateway-connection.h"
-#include "network.h"
-#include "gateway.h"
-#include "channel-connection.h"
-#include "channel-presence.h"
-#include "presence.h"
-#include "messages.h"
+#include <lib.h>
+#include <ioloop.h>
+#include <chat-protocol.h>
+#include <event.h>
+#include <local-user.h>
+#include <local-presence.h>
+#include <gateway-connection.h>
+#include <network.h>
+#include <gateway.h>
+#include <channel-connection.h>
+#include <channel-presence.h>
+#include <presence.h>
+#include <messages.h>
+
+#include <silc.h>
+#include <silcclient.h>
 
 #include "clientops.h"
+#include "icecap-silc.h"
 #include "support.h"
 #include "silc-gateway-connection.h"
 #include "silc-channel-connection.h"
@@ -84,18 +86,18 @@ void i_silc_operation_notify(SilcClient client,
 			str = strtok(motd, "\n");
 			event = gwconn_get_event(gwconn, EVENT_GATEWAY_MOTD);
 			event_add(event, "data", str);
-			event_send(event);
+			event_send(&event);
 			while ( (str = strtok(NULL, "\n")) ) {
 				event = gwconn_get_event(gwconn,
 						EVENT_GATEWAY_MOTD);
 				event_add(event, "data", str);
-				event_send(event);
+				event_send(&event);
 			}
 
 			/* send gateway_motd_end event */
 			event = gwconn_get_event(gwconn,
 					EVENT_GATEWAY_MOTD_END);
-			event_send(event);
+			event_send(&event);
 
 			break;
 
@@ -108,7 +110,7 @@ void i_silc_operation_notify(SilcClient client,
 			event_add(event, EVENT_KEY_LOCAL_PRESENCE_NAME,
 					gwconn->local_presence->name);
 			event_add(event, EVENT_KEY_MSG_TEXT, str);
-			event_send(event);
+			event_send(&event);
 
 			if( silc_gwconn->connected == FALSE ) {
 				silc_client_command_call(silc_gwconn->client,
@@ -131,7 +133,7 @@ void i_silc_operation_notify(SilcClient client,
 			event_add(event, "nickname", client_entry->nickname);
 			event_add(event, "username", client_entry->username);
 			event_add(event, "hostname", client_entry->hostname);
-			event_send(event);
+			event_send(&event);
 			break;
 
 		case SILC_NOTIFY_TYPE_JOIN:
@@ -147,10 +149,10 @@ void i_silc_operation_notify(SilcClient client,
 					channel_entry->channel_name);
 			event_add(event, "nick", client_entry->nickname);
 			event_add(event, "address", userhost);
-			event_send(event);
+			event_send(&event);
 
 			if( !i_silc_client_id_is_me(silc_gwconn,
-						client_entry->id) ) {
+						&client_entry->id) ) {
 				silc_chconn =
 					i_silc_channel_connection_lookup(
 						silc_gwconn,
@@ -182,7 +184,7 @@ void i_silc_operation_notify(SilcClient client,
 
 					channel_connection_add_presence(chconn,
 							chpres);
-					presence_unref(presence);
+					presence_unref(&presence);
 				} else if( channel_connection_lookup_presence(
 						chconn,
 						presence->name) == NULL ) {
@@ -226,12 +228,12 @@ void i_silc_operation_notify(SilcClient client,
 					channel_entry->channel_name);
 			event_add(event, "nick", client_entry->nickname);
 			event_add(event, "address", userhost);
-			event_send(event);
+			event_send(&event);
 
 			free(userhost);
 
 			if( !i_silc_client_id_is_me(silc_gwconn,
-						client_entry->id) ) {
+						&client_entry->id) ) {
 				/* Someone else left */
 				silc_chconn =
 					i_silc_channel_connection_lookup(
@@ -265,7 +267,7 @@ void i_silc_operation_notify(SilcClient client,
 					client_entry->nickname : "unknown");
 			event_add(event, "address", userhost);
 			event_add(event, "reason", str ? str : "");
-			event_send(event);
+			event_send(&event);
 
 			free(userhost);
 
@@ -306,11 +308,11 @@ void i_silc_operation_notify(SilcClient client,
 			event_add(event, "kicker", kicker->nickname);
 			event_add(event, "target", kicked->nickname);
 			event_add(event, EVENT_KEY_MSG_TEXT, (str ? str : ""));
-			event_send(event);
+			event_send(&event);
 
 			if( kicked == silc_gwconn->conn->local_entry ) { 
 				/* we were kicked */
-				channel_connection_deinit(chconn, str, TRUE);
+				channel_connection_deinit(&chconn, str, TRUE);
 			} else {
 				chpres = channel_connection_lookup_presence(
 						chconn, kicked->nickname);
@@ -335,7 +337,7 @@ void i_silc_operation_notify(SilcClient client,
 					gwconn->local_presence->name);
 			event_add(event, "name", old->nickname);
 			event_add(event, "new_name", new->nickname);
-			event_send(event);
+			event_send(&event);
 
 			presence = presence_lookup(gwconn, old->nickname);
 			if( presence == NULL ) {
@@ -390,7 +392,7 @@ void i_silc_operation_notify(SilcClient client,
 			event_add(event, "channel",
 					channel_entry2->channel_name);
 			event_add(event, "topic", str);
-			event_send(event);
+			event_send(&event);
 
 			if( set_type != NULL )
 				free(set_type);
@@ -404,7 +406,7 @@ void i_silc_operation_notify(SilcClient client,
 
 		default:
 			event = silc_server_event_new(lu, "unhandled");
-			event_send(event);
+			event_send(&event);
 			break;
 	}
 	va_end(va);

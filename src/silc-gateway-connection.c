@@ -19,9 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <silcincludes.h>
-#include <silcclient.h>
-
 #include "lib.h"
 #include "event.h"
 #include "network.h"
@@ -35,7 +32,9 @@
 #include "local-presence.h"
 #include "array.h"
 
-#include "silc.h"
+#include <silc.h>
+#include <silcclient.h>
+
 #include "support.h"
 #include "silc-gateway.h"
 #include "silc-gateway-connection.h"
@@ -79,7 +78,7 @@ static void event_gateway_connected(struct event *event)
 	struct gateway_connection *gwconn;
 	struct i_silc_gateway_connection *silc_gwconn;
 
-	gwconn = event_get_control(event, "gateway_connection");
+	gwconn = event_get_control(event, gwconn);
 	if( gwconn == NULL || !IS_SILC_GWCONN(gwconn) )
 			return;
 
@@ -107,7 +106,7 @@ static void event_gateway_disconnected(struct event *event)
 	struct gateway_connection *gwconn;
 	struct i_silc_gateway_connection *silc_gwconn;
 
-	gwconn = event_get_control(event, "gateway_connection");
+	gwconn = event_get_control(event, gwconn);
 	if( gwconn == NULL || !IS_SILC_GWCONN(gwconn) )
 			return;
 

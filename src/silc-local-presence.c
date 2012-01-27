@@ -21,20 +21,21 @@
 
 #include <string.h>
 
-#include <silcincludes.h>
-#include <silcclient.h>
-
 #include "lib.h"
 #include "buffer.h"
 #include "event.h"
 #include "client-commands.h"
-#include "client.h"
+#include "server/client.h"
 #include "local-presence.h"
 #include "network.h"
 #include "base64.h"
 #include "array.h"
 
-#include "silc.h"
+#undef CLIENT_H
+#include <silc.h>
+#include <silcclient.h>
+
+#include "icecap-silc.h"
 #include "support.h"
 #include "silc-presence.h"
 #include "silc-gateway-connection.h"
@@ -53,13 +54,13 @@ void i_silc_presence_commands_deinit(void){
 	event_unbind_list(silc_cmd_presence_low);
 }
 
-static void silc_cmd_presence_add_low(struct event *event)
+static void silc_cmd_presence_init_low(struct event *event)
 {
 	const char *pub_key = event_get(event, SILC_EVENT_KEY_PUBKEY);
 	const char *prv_key = event_get(event, SILC_EVENT_KEY_PRVKEY);
 	const char *passphrase = event_get(event, SILC_EVENT_KEY_PASSPHRASE);
 	const char *name = event_get(event, EVENT_KEY_LOCAL_PRESENCE_NAME);
-	struct client *client = event_get_client(event);
+	struct client *client = event_get_control(event, client);
 	struct local_user *lu;
 	const char *network = event_get(event, EVENT_KEY_NETWORK_NAME);
 	struct network *net;
@@ -97,11 +98,11 @@ static void silc_cmd_presence_add_low(struct event *event)
 		lpr = local_presence_lookup(lu, net, name);
 		i_assert(lpr != NULL);
 
-		array_idx_set(&lpr->module_contexts, silc_module_id, &auth);
+//		array_idx_set(&lpr->module_contexts, silc_module_id, &auth);
 	}
 }
 
 static struct event_bind_list silc_cmd_presence_low[] = {
-	{ NULL, "presence add", silc_cmd_presence_add_low },
+	{ NULL, EVENT_PRESENCE_INIT, silc_cmd_presence_init_low },
 	{ NULL, NULL, NULL }
 };

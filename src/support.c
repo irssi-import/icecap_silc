@@ -30,7 +30,6 @@
 #include "silc-local-presence.h"
 
 unsigned int verify_message_signature(SilcClientEntry sender __attr_unused__,
-		SilcMessageSignedPayload sig __attr_unused__,
 		SilcMessagePayload payload __attr_unused__)
 {
 	/* FIXME: do signature check - return "dunno" for now */

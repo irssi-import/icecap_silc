@@ -6,6 +6,8 @@
 
 #include "local-presence.h"
 
+#include "silc-gateway-connection.h"
+
 SilcClient i_silc_client_init(struct local_presence *lp);
 void i_silc_client_deinit(SilcClient client, SilcClientConnection conn);
 

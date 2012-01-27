@@ -19,10 +19,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <silcincludes.h>
-#include <silcclient.h>
-
 #include "lib.h"
+#include "chat-protocol.h"
 #include "event.h"
 #include "tree.h"
 #include "presence.h"
@@ -33,7 +31,10 @@
 #include "client-commands.h"
 #include "array.h"
 
-#include "silc.h"
+#include <silc.h>
+#include <silcclient.h>
+
+#include "icecap-silc.h"
 #include "support.h"
 #include "silc-channel-connection.h"
 #include "silc-gateway-connection.h"
@@ -56,9 +57,9 @@ void i_silc_channel_connection_events_deinit(void)
 
 struct channel_connection *
 i_silc_channel_connection_init(
-		struct gateway_connection *gwconn __attr_unused__,
+		struct gateway_connection *gwconn,
 		struct channel *channel,
-		struct event *event __attr_unused__)
+		struct event *event)
 {
 	struct i_silc_channel_connection *silc_chconn =
 				i_new(struct i_silc_channel_connection, 1);
@@ -79,7 +80,7 @@ void i_silc_channel_connection_deinit(struct channel_connection *chconn)
 
 void event_channel_connection_init(struct event *event)
 {
-	struct channel_connection *chconn = event_get_channel_conn(event);
+	struct channel_connection *chconn = event_get_control(event, channel_conn);
 
 	if( !IS_SILC_CHCONN(chconn) )
 		return;
@@ -94,9 +95,11 @@ void event_channel_connection_init(struct event *event)
 
 	i_assert(idp != NULL);
 
-	silc_client_command_send(silc_gwconn->client, silc_gwconn->conn,
-			SILC_COMMAND_JOIN, 0, 2, 1, channel_str,
-			strlen(channel_str), 2, idp->data, idp->len);
+	silc_client_command_call(silc_gwconn->client, silc_gwconn->conn,
+			"JOIN", channel_str);
+//	silc_client_command_send(silc_gwconn->client, silc_gwconn->conn,
+//			SILC_COMMAND_JOIN, 0, 2, 1, channel_str,
+//			strlen(channel_str), 2, silc_buffer_len(idp), idp->len);
 }
 
 void i_silc_channel_change_request(struct channel_connection *chconn,
@@ -171,7 +174,7 @@ i_silc_channel_connection_lookup(struct i_silc_gateway_connection *silc_gwconn,
 
 static void refresh_nicklist_resolved(SilcClient client,
 		SilcClientConnection conn, SilcClientEntry *clients,
-		SilcUInt32 clients_count __attr_unused__, void *context)
+		SilcUInt32 clients_count, void *context)
 {
 	SilcJoinResolve *r = context;
 	SilcChannelEntry channel_entry = r->channel;
@@ -238,7 +241,7 @@ static void refresh_nicklist_resolved(SilcClient client,
 
 static void event_joined(struct event *event)
 {
-	struct channel *channel = event_get_control(event, "channel");
+	struct channel *channel = event_get_control(event, channel);
 	struct channel_connection *chconn = channel_get_connection(channel);
 	struct i_silc_channel_connection *silc_chconn;
 	struct i_silc_gateway_connection *silc_gwconn;
@@ -256,10 +259,11 @@ static void event_joined(struct event *event)
 	r->channel = silc_chconn->channel_entry;
 	r->retry = 0;
 
-	if( event_isset(event, "init") )
+	if( event_isset(event, "init") ) {
 		silc_client_get_clients_by_channel(silc_gwconn->client,
 				silc_gwconn->conn, silc_chconn->channel_entry,
 				refresh_nicklist_resolved, r);
+	}
 }
 
 static void silc_cmd_channel_part(struct event *event)
